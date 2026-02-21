@@ -1,14 +1,15 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 13,
   "summary": "Labor booking app where laborers can book services from neighboring laborers",
   "architectural_notes": [
     "User type: Laborers (both service providers and consumers)",
     "Core functionality: Peer-to-peer labor booking marketplace"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Hero background image showing diverse laborers at work in warm lighting (hero-bg.dim_1920x1080.png)\n- Simple handshake icon representing booking connection in earth tones (handshake-icon.dim_128x128.png)",
+  "known_issues": [
+    "Booking page displays 'labour not found' error"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-build-user-authentication-system-using-internet-identity-for-laborers-to-securely-log-in-and-manage-their-profiles",
@@ -57,6 +58,118 @@
         "REQ-9"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-detailed-booking-view-page-that-displays-comprehensive-information-for-a-single-booking-including-laborer-details-service-information-date-time-duration-location-status-and-timestamps",
+      "title": "Add a detailed booking view page that displays comprehensive information for a single booking including laborer details, service information, date/time, duration, location, status, and timestamps",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-booking-details-entry-form-that-allows-laborers-to-add-or-edit-additional-notes-special-instructions-or-requirements-for-an-existing-booking",
+      "title": "Implement booking details entry form that allows laborers to add or edit additional notes, special instructions, or requirements for an existing booking",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-navigation-from-the-bookings-dashboard-to-individual-booking-detail-pages-with-deep-linking-support",
+      "title": "Add navigation from the bookings dashboard to individual booking detail pages with deep linking support",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enhance-the-bookings-dashboard-with-filtering-and-sorting-capabilities-including-filter-by-status-pending-confirmed-completed-cancelled-and-sort-by-date",
+      "title": "Enhance the bookings dashboard with filtering and sorting capabilities including filter by status (pending, confirmed, completed, cancelled) and sort by date",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-booking-history-section-to-the-dashboard-that-shows-completed-and-cancelled-bookings-separately-from-active-bookings",
+      "title": "Add a booking history section to the dashboard that shows completed and cancelled bookings separately from active bookings",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-booking-creation-mutation-in-usequeries-ts-that-causes-indefinite-buffering-when-submitting-booking-requests-ensuring-the-mutation-completes-successfully-and-returns-appropriate-success-or-error-states",
+      "title": "Investigate and fix the booking creation mutation in useQueries.ts that causes indefinite buffering when submitting booking requests, ensuring the mutation completes successfully and returns appropriate success or error states",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-error-handling-and-timeout-logic-to-the-createbooking-backend-call-in-createbookingpage-tsx-to-prevent-indefinite-waiting-states-and-provide-user-feedback-if-the-request-fails-or-times-out",
+      "title": "Add error handling and timeout logic to the createBooking backend call in CreateBookingPage.tsx to prevent indefinite waiting states and provide user feedback if the request fails or times out",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-resolve-the-infinite-loading-state-on-the-booking-creation-page-that-prevents-booking-requests-from-completing-successfully",
+      "title": "Debug and resolve the infinite loading state on the booking creation page that prevents booking requests from completing successfully",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-logging-to-the-createbooking-mutation-flow-in-usequeries-ts-to-capture-request-lifecycle-response-data-and-any-errors-or-timeouts",
+      "title": "Add comprehensive logging to the createBooking mutation flow in useQueries.ts to capture request lifecycle, response data, and any errors or timeouts",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-explicit-timeout-handling-to-the-createbooking-mutation-in-createbookingpage-tsx-that-triggers-after-10-seconds-and-displays-a-user-friendly-error-message-if-no-response-is-received",
+      "title": "Add explicit timeout handling to the createBooking mutation in CreateBookingPage.tsx that triggers after 10 seconds and displays a user-friendly error message if no response is received",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-element-at-xpath-html-1-body-1-div-1-div-1-main-1-div-1-section-1-div-2-div-1-div-2-a-1-in-the-booking-creation-page-createbookingpage-tsx-that-is-not-functioning-correctly-investigate-click-handlers-navigation-logic-and-any-associated-state-management-to-ensure-the-element-performs-its-intended-action",
+      "title": "Debug and fix the element at XPath /html[1]/body[1]/div[1]/div[1]/main[1]/div[1]/section[1]/div[2]/div[1]/div[2]/a[1] in the booking creation page (CreateBookingPage.tsx) that is not functioning correctly. Investigate click handlers, navigation logic, and any associated state management to ensure the element performs its intended action.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-and-user-feedback-for-the-element-at-xpath-html-1-body-1-div-1-div-1-main-1-div-1-section-1-div-2-div-1-div-2-a-1-to-capture-any-failures-including-event-listener-errors-navigation-failures-or-state-update-issues",
+      "title": "Add comprehensive error logging and user feedback for the element at XPath /html[1]/body[1]/div[1]/div[1]/main[1]/div[1]/section[1]/div[2]/div[1]/div[2]/a[1] to capture any failures, including event listener errors, navigation failures, or state update issues.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-labour-not-found-error-displayed-on-the-booking-creation-page-createbookingpage-tsx-by-investigating-the-laborer-data-fetching-logic-verifying-the-laborid-parameter-is-correctly-passed-and-parsed-and-ensuring-the-backend-getlaborerbyid-function-returns-the-correct-laborer-data",
+      "title": "Debug and fix the 'labour not found' error displayed on the booking creation page (CreateBookingPage.tsx) by investigating the laborer data fetching logic, verifying the laborId parameter is correctly passed and parsed, and ensuring the backend getLaborerById function returns the correct laborer data",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-to-the-createbookingpage-tsx-laborer-data-fetching-flow-to-capture-the-laborid-parameter-value-query-execution-status-backend-response-and-any-error-details-to-aid-in-debugging-the-labour-not-found-issue",
+      "title": "Add comprehensive error logging to the CreateBookingPage.tsx laborer data fetching flow to capture the laborId parameter value, query execution status, backend response, and any error details to aid in debugging the 'labour not found' issue",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -93,6 +206,30 @@
       "summary": "Create neighbor discovery functionality that filters and displays laborers based on proximity or neighborhood location",
       "reqIds": [
         "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Verify the backend createBooking function in main.mo properly handles all edge cases and returns responses promptly without hanging, including validation of required fields and proper error responses",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Verify the backend createBooking function in main.mo returns responses promptly and handles all error cases without hanging, including validation errors for missing or invalid fields",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Verify the backend getLaborerById function in main.mo correctly retrieves laborer data and returns null only when the laborer genuinely does not exist, ensuring proper handling of Principal-based lookups and state access",
+      "reqIds": [
+        "REQ-26"
       ],
       "status": "pending"
     }

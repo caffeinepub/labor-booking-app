@@ -18,8 +18,15 @@ export const BookingInput = IDL.Record({
   'serviceType' : IDL.Text,
   'targetLaborer' : IDL.Principal,
   'durationHours' : IDL.Nat,
+  'details' : IDL.Opt(IDL.Text),
   'dateTime' : Time,
   'location' : IDL.Text,
+});
+export const BookingResponse = IDL.Variant({
+  'ok' : IDL.Nat,
+  'laborerNotFound' : IDL.Null,
+  'callerNotAuthorizedToBook' : IDL.Null,
+  'invalidFieldValues' : IDL.Null,
 });
 export const BookingStatus = IDL.Variant({
   'cancelled' : IDL.Null,
@@ -34,6 +41,7 @@ export const Booking = IDL.Record({
   'requester' : IDL.Principal,
   'targetLaborer' : IDL.Principal,
   'durationHours' : IDL.Nat,
+  'details' : IDL.Opt(IDL.Text),
   'dateTime' : Time,
   'location' : IDL.Text,
 });
@@ -75,7 +83,7 @@ export const LaborerInput = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'createBooking' : IDL.Func([BookingInput], [IDL.Nat], []),
+  'createBooking' : IDL.Func([BookingInput], [BookingResponse], []),
   'getBookablesNearLocation' : IDL.Func(
       [IDL.Text, IDL.Nat],
       [IDL.Vec(LaborerData)],
@@ -84,6 +92,7 @@ export const idlService = IDL.Service({
   'getCallerLaborer' : IDL.Func([], [IDL.Opt(LaborerData)], []),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getLaborerById' : IDL.Func([IDL.Principal], [IDL.Opt(LaborerData)], []),
   'getLaborersByNeighborhood' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(LaborerData)],
@@ -97,6 +106,7 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerLaborer' : IDL.Func([LaborerInput], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'updateBookingDetails' : IDL.Func([IDL.Nat, IDL.Text], [], []),
   'updateBookingStatus' : IDL.Func([IDL.Nat, BookingStatus], [], []),
 });
 
@@ -113,8 +123,15 @@ export const idlFactory = ({ IDL }) => {
     'serviceType' : IDL.Text,
     'targetLaborer' : IDL.Principal,
     'durationHours' : IDL.Nat,
+    'details' : IDL.Opt(IDL.Text),
     'dateTime' : Time,
     'location' : IDL.Text,
+  });
+  const BookingResponse = IDL.Variant({
+    'ok' : IDL.Nat,
+    'laborerNotFound' : IDL.Null,
+    'callerNotAuthorizedToBook' : IDL.Null,
+    'invalidFieldValues' : IDL.Null,
   });
   const BookingStatus = IDL.Variant({
     'cancelled' : IDL.Null,
@@ -129,6 +146,7 @@ export const idlFactory = ({ IDL }) => {
     'requester' : IDL.Principal,
     'targetLaborer' : IDL.Principal,
     'durationHours' : IDL.Nat,
+    'details' : IDL.Opt(IDL.Text),
     'dateTime' : Time,
     'location' : IDL.Text,
   });
@@ -170,7 +188,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'createBooking' : IDL.Func([BookingInput], [IDL.Nat], []),
+    'createBooking' : IDL.Func([BookingInput], [BookingResponse], []),
     'getBookablesNearLocation' : IDL.Func(
         [IDL.Text, IDL.Nat],
         [IDL.Vec(LaborerData)],
@@ -179,6 +197,7 @@ export const idlFactory = ({ IDL }) => {
     'getCallerLaborer' : IDL.Func([], [IDL.Opt(LaborerData)], []),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getLaborerById' : IDL.Func([IDL.Principal], [IDL.Opt(LaborerData)], []),
     'getLaborersByNeighborhood' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(LaborerData)],
@@ -192,6 +211,7 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerLaborer' : IDL.Func([LaborerInput], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'updateBookingDetails' : IDL.Func([IDL.Nat, IDL.Text], [], []),
     'updateBookingStatus' : IDL.Func([IDL.Nat, BookingStatus], [], []),
   });
 };

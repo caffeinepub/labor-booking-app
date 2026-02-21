@@ -1,6 +1,7 @@
 import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from './hooks/useQueries';
+import { Toaster } from './components/ui/sonner';
 import Layout from './components/Layout';
 import ProfileSetupModal from './components/ProfileSetupModal';
 import ProfilePage from './pages/ProfilePage';
@@ -8,6 +9,7 @@ import DiscoveryPage from './pages/DiscoveryPage';
 import CreateBookingPage from './pages/CreateBookingPage';
 import BookingSuccessPage from './pages/BookingSuccessPage';
 import BookingsDashboard from './pages/BookingsDashboard';
+import BookingDetailPage from './pages/BookingDetailPage';
 import LandingPage from './pages/LandingPage';
 
 function LayoutWrapper() {
@@ -23,6 +25,7 @@ function LayoutWrapper() {
         <Outlet />
       </Layout>
       {showProfileSetup && <ProfileSetupModal />}
+      <Toaster />
     </>
   );
 }
@@ -67,6 +70,12 @@ const bookingsDashboardRoute = createRoute({
   component: BookingsDashboard,
 });
 
+const bookingDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bookings/$bookingId',
+  component: BookingDetailPage,
+});
+
 const routeTree = rootRoute.addChildren([
   landingRoute,
   profileRoute,
@@ -74,6 +83,7 @@ const routeTree = rootRoute.addChildren([
   createBookingRoute,
   bookingSuccessRoute,
   bookingsDashboardRoute,
+  bookingDetailRoute,
 ]);
 
 const router = createRouter({ routeTree });

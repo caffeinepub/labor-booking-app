@@ -1,7 +1,6 @@
 import Map "mo:core/Map";
 import List "mo:core/List";
 import Iter "mo:core/Iter";
-import Order "mo:core/Order";
 import Text "mo:core/Text";
 import Time "mo:core/Time";
 import Principal "mo:core/Principal";
@@ -40,6 +39,7 @@ actor {
     durationHours : Nat;
     status : BookingStatus;
     location : Text;
+    details : ?Text;
   };
 
   public type Service = {
@@ -85,6 +85,14 @@ actor {
     dateTime : Time.Time;
     durationHours : Nat;
     location : Text;
+    details : ?Text;
+  };
+
+  public type BookingResponse = {
+    #ok : Nat;
+    #laborerNotFound;
+    #callerNotAuthorizedToBook;
+    #invalidFieldValues;
   };
 
   public type UserProfile = {
@@ -113,6 +121,27 @@ actor {
     laborersStore.add(caller, laborer);
   };
 
+  public shared ({ caller }) func getLaborerById(laborerId : Principal) : async ?LaborerData {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view laborer profiles");
+    };
+    switch (laborersStore.get(laborerId)) {
+      case (null) { null };
+      case (?laborer) {
+        ?{
+          id = laborer.id;
+          name = laborer.name;
+          skills = laborer.skills;
+          services = laborer.services.toArray();
+          location = laborer.location;
+          contact = laborer.contact;
+          availability = laborer.availability;
+          bookings = laborer.bookings.toArray();
+        };
+      };
+    };
+  };
+
   public shared ({ caller }) func getCallerLaborer() : async ?LaborerData {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view profiles");
@@ -136,7 +165,7 @@ actor {
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view profiles");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     userProfiles.get(caller);
   };
@@ -193,32 +222,44 @@ actor {
     ).toArray();
   };
 
-  public shared ({ caller }) func createBooking(bookData : BookingInput) : async Nat {
+  public shared ({ caller }) func createBooking(bookingData : BookingInput) : async BookingResponse {
+    // Access control check
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can book laborers");
+      return #callerNotAuthorizedToBook;
+    };
+
+    // Validation checks for mandatory fields
+    if (bookingData.serviceType.size() == 0 or bookingData.location.size() == 0 or bookingData.durationHours == 0) {
+      return #invalidFieldValues;
     };
 
     // Verify target laborer exists
-    let targetLaborer = switch (laborersStore.get(bookData.targetLaborer)) {
-      case (null) { Runtime.trap("Target laborer does not exist") };
+    let targetLaborer = switch (laborersStore.get(bookingData.targetLaborer)) {
+      case (null) { return #laborerNotFound };
       case (?laborer) { laborer };
     };
 
+    // Generate booking Id
     let bookingId = nextBookingId;
     nextBookingId += 1;
 
+    // Simplify Booking creation: Use a more compact way to construct the record
     let booking : Booking = {
       id = bookingId;
       requester = caller;
-      targetLaborer = bookData.targetLaborer;
-      serviceType = bookData.serviceType;
-      dateTime = bookData.dateTime;
-      durationHours = bookData.durationHours;
+      targetLaborer = bookingData.targetLaborer;
+      serviceType = bookingData.serviceType;
+      dateTime = bookingData.dateTime;
+      durationHours = bookingData.durationHours;
       status = #pending;
-      location = bookData.location;
+      location = bookingData.location;
+      details = bookingData.details;
     };
 
-    let updatedBookings = targetLaborer.bookings;
+    // Prepend new booking so we do not need to traverse the entire list
+    let updatedBookings = List.singleton<Booking>(booking);
+
+    // Update laborer record using copy-on-write pattern
     let updatedLaborer = {
       id = targetLaborer.id;
       name = targetLaborer.name;
@@ -230,8 +271,9 @@ actor {
       bookings = updatedBookings;
     };
 
-    laborersStore.add(bookData.targetLaborer, updatedLaborer);
-    bookingId;
+    laborersStore.add(bookingData.targetLaborer, updatedLaborer);
+
+    #ok(bookingId);
   };
 
   public shared ({ caller }) func getBookablesNearLocation(location : Text, radius : Nat) : async [LaborerData] {
@@ -301,6 +343,72 @@ actor {
             durationHours = b.durationHours;
             status;
             location = b.location;
+            details = b.details;
+          };
+        } else { b };
+      }
+    );
+
+    let updatedLaborer = {
+      id = laborer.id;
+      name = laborer.name;
+      skills = laborer.skills;
+      services = laborer.services;
+      location = laborer.location;
+      contact = laborer.contact;
+      availability = laborer.availability;
+      bookings = updatedBookings;
+    };
+
+    laborersStore.add(laborer.id, updatedLaborer);
+  };
+
+  public shared ({ caller }) func updateBookingDetails(bookingId : Nat, details : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can update bookings");
+    };
+
+    var foundLaborer : ?Laborer = null;
+    var foundBooking : ?Booking = null;
+
+    for ((principal, laborer) in laborersStore.entries()) {
+      let bookingOpt = laborer.bookings.find(func(b : Booking) : Bool { b.id == bookingId });
+      switch (bookingOpt) {
+        case (?booking) {
+          foundLaborer := ?laborer;
+          foundBooking := ?booking;
+        };
+        case null {};
+      };
+    };
+
+    let laborer = switch (foundLaborer) {
+      case (null) { Runtime.trap("Booking does not exist") };
+      case (?l) { l };
+    };
+
+    let booking = switch (foundBooking) {
+      case (null) { Runtime.trap("Booking does not exist") };
+      case (?b) { b };
+    };
+
+    if (caller != booking.targetLaborer) {
+      Runtime.trap("Unauthorized: Only the target laborer can update booking details");
+    };
+
+    let updatedBookings = laborer.bookings.map<Booking, Booking>(
+      func(b : Booking) : Booking {
+        if (b.id == bookingId) {
+          {
+            id = b.id;
+            requester = b.requester;
+            targetLaborer = b.targetLaborer;
+            serviceType = b.serviceType;
+            dateTime = b.dateTime;
+            durationHours = b.durationHours;
+            status = b.status;
+            location = b.location;
+            details = ?details;
           };
         } else { b };
       }

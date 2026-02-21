@@ -39,6 +39,7 @@ export interface BookingInput {
     serviceType: string;
     targetLaborer: Principal;
     durationHours: bigint;
+    details?: string;
     dateTime: Time;
     location: string;
 }
@@ -47,6 +48,19 @@ export interface Service {
     description: string;
     price: bigint;
 }
+export type BookingResponse = {
+    __kind__: "ok";
+    ok: bigint;
+} | {
+    __kind__: "laborerNotFound";
+    laborerNotFound: null;
+} | {
+    __kind__: "callerNotAuthorizedToBook";
+    callerNotAuthorizedToBook: null;
+} | {
+    __kind__: "invalidFieldValues";
+    invalidFieldValues: null;
+};
 export interface Booking {
     id: bigint;
     status: BookingStatus;
@@ -54,6 +68,7 @@ export interface Booking {
     requester: Principal;
     targetLaborer: Principal;
     durationHours: bigint;
+    details?: string;
     dateTime: Time;
     location: string;
 }
@@ -83,15 +98,17 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    createBooking(bookData: BookingInput): Promise<bigint>;
+    createBooking(bookingData: BookingInput): Promise<BookingResponse>;
     getBookablesNearLocation(location: string, radius: bigint): Promise<Array<LaborerData>>;
     getCallerLaborer(): Promise<LaborerData | null>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getLaborerById(laborerId: Principal): Promise<LaborerData | null>;
     getLaborersByNeighborhood(neighborhood: string): Promise<Array<LaborerData>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerLaborer(laborerInput: LaborerInput): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateBookingDetails(bookingId: bigint, details: string): Promise<void>;
     updateBookingStatus(bookingId: bigint, status: BookingStatus): Promise<void>;
 }

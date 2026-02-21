@@ -1,171 +1,70 @@
 {
   "kind": "build_request",
-  "title": "Create labor booking platform with neighbor discovery",
-  "projectName": "Labor Connect",
-  "priority": "normal",
+  "title": "Fix 'labour not found' error on booking page",
+  "projectName": "LaborConnect",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Create a backend data model for laborers that stores profile information including name, skills/services offered, location, contact details, and availability status",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Laborer profiles can be created with all required fields",
-        "Laborer data persists across canister upgrades",
-        "Profile information can be retrieved and updated"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Implement backend booking system that allows laborers to create booking requests for other laborers, including service type, date/time, duration, and status tracking (pending, confirmed, completed, cancelled)",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Laborers can create booking requests for other laborers",
-        "Bookings include all required details (service, date, time, duration)",
-        "Booking status can be updated through state transitions",
-        "Bookings are associated with both requester and provider laborers"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Create neighbor discovery functionality that filters and displays laborers based on proximity or neighborhood location",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Laborers can be filtered by location/neighborhood",
-        "Query returns laborers sorted or filtered by proximity",
-        "Location-based search is performant"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Build user authentication system using Internet Identity for laborers to securely log in and manage their profiles",
+      "id": "REQ-24",
+      "text": "Debug and fix the 'labour not found' error displayed on the booking creation page (CreateBookingPage.tsx) by investigating the laborer data fetching logic, verifying the laborId parameter is correctly passed and parsed, and ensuring the backend getLaborerById function returns the correct laborer data",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
+        ],
+        "quotes": [
+          "now it is showing labour not found"
         ]
       },
       "acceptanceCriteria": [
-        "Laborers can authenticate using Internet Identity",
-        "Authenticated users can access only their own profile and bookings",
-        "Session state persists across page refreshes"
+        "The booking page successfully loads laborer information when accessed with a valid laborId",
+        "No 'labour not found' error is displayed when the laborId exists in the system",
+        "Appropriate error handling displays a user-friendly message if the laborId is genuinely invalid or missing",
+        "The laborId URL parameter is correctly extracted and passed to the backend query"
       ]
     },
     {
-      "id": "REQ-5",
-      "text": "Create a laborer profile management page where users can view and edit their profile information, services offered, and availability",
+      "id": "REQ-25",
+      "text": "Add comprehensive error logging to the CreateBookingPage.tsx laborer data fetching flow to capture the laborId parameter value, query execution status, backend response, and any error details to aid in debugging the 'labour not found' issue",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ]
       },
       "acceptanceCriteria": [
-        "Profile page displays all laborer information",
-        "Users can edit and save profile changes",
-        "Form validation ensures required fields are filled",
-        "Changes are reflected immediately after saving"
+        "Console logs show the laborId value being used in the query",
+        "Backend response data or error details are logged when the laborer query executes",
+        "Error states are clearly logged with descriptive messages indicating the failure point"
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Build a neighbor laborer discovery interface that displays nearby laborers with their skills, availability, and allows filtering by service type and location",
-      "target": "frontend",
+      "id": "REQ-26",
+      "text": "Verify the backend getLaborerById function in main.mo correctly retrieves laborer data and returns null only when the laborer genuinely does not exist, ensuring proper handling of Principal-based lookups and state access",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ]
       },
       "acceptanceCriteria": [
-        "Displays list of laborers with profile information",
-        "Users can filter by service type and location",
-        "Each laborer card shows key information (name, skills, availability)",
-        "Interface is responsive and easy to navigate"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Create a booking request interface where laborers can select another laborer, choose service details, specify date/time, and submit booking requests",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Users can select a laborer from the discovery page to book",
-        "Booking form includes service type, date, time, and duration fields",
-        "Form validation prevents invalid bookings",
-        "Success confirmation is shown after booking creation"
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Build a bookings dashboard showing both outgoing booking requests (requests made to others) and incoming booking requests (requests received from others) with status indicators and action buttons",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dashboard displays two sections: outgoing and incoming bookings",
-        "Each booking shows service, date, time, status, and laborer information",
-        "Laborers can confirm, cancel, or complete bookings with appropriate buttons",
-        "Status changes update in real-time",
-        "Past and current bookings are distinguishable"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Design a cohesive visual theme with warm, professional colors and clear typography that conveys trust and accessibility for labor workers, avoiding blue and purple color schemes",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Consistent color palette applied across all pages",
-        "Typography is clear and readable",
-        "Design feels welcoming and professional",
-        "Visual hierarchy guides users through key actions"
+        "The getLaborerById function successfully returns laborer data for valid Principal IDs",
+        "The function returns null only when the laborer does not exist in the laborers HashMap",
+        "No runtime errors occur during laborer lookup operations"
       ]
     }
   ],
   "constraints": [
-    "Use single-actor Motoko architecture for all backend logic",
-    "Authentication must use Internet Identity only",
-    "Frontend must use React with TypeScript, Tailwind CSS, and Shadcn components",
-    "Do not modify immutable frontend paths (useInternetIdentity, useActor, main.tsx, components/ui)"
+    "Maintain single-actor backend architecture in main.mo",
+    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, frontend/src/components/ui"
   ],
   "nonGoals": [
-    "Payment processing or financial transactions",
-    "Real-time chat or messaging between laborers",
-    "GPS-based location tracking or maps integration",
-    "Push notifications or SMS alerts",
-    "Rating and review system",
-    "Multi-language support"
+    "Redesigning the booking page UI or layout",
+    "Adding new laborer profile fields",
+    "Implementing new booking features beyond fixing the error"
   ],
   "imageRequirements": {
-    "required": [
-      "Hero background image showing diverse laborers at work in warm lighting (hero-bg.dim_1920x1080.png)",
-      "Simple handshake icon representing booking connection in earth tones (handshake-icon.dim_128x128.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

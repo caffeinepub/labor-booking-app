@@ -25,6 +25,7 @@ export interface Booking {
   'requester' : Principal,
   'targetLaborer' : Principal,
   'durationHours' : bigint,
+  'details' : [] | [string],
   'dateTime' : Time,
   'location' : string,
 }
@@ -32,9 +33,14 @@ export interface BookingInput {
   'serviceType' : string,
   'targetLaborer' : Principal,
   'durationHours' : bigint,
+  'details' : [] | [string],
   'dateTime' : Time,
   'location' : string,
 }
+export type BookingResponse = { 'ok' : bigint } |
+  { 'laborerNotFound' : null } |
+  { 'callerNotAuthorizedToBook' : null } |
+  { 'invalidFieldValues' : null };
 export type BookingStatus = { 'cancelled' : null } |
   { 'pending' : null } |
   { 'completed' : null } |
@@ -70,7 +76,7 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'createBooking' : ActorMethod<[BookingInput], bigint>,
+  'createBooking' : ActorMethod<[BookingInput], BookingResponse>,
   'getBookablesNearLocation' : ActorMethod<
     [string, bigint],
     Array<LaborerData>
@@ -78,11 +84,13 @@ export interface _SERVICE {
   'getCallerLaborer' : ActorMethod<[], [] | [LaborerData]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getLaborerById' : ActorMethod<[Principal], [] | [LaborerData]>,
   'getLaborersByNeighborhood' : ActorMethod<[string], Array<LaborerData>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerLaborer' : ActorMethod<[LaborerInput], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'updateBookingDetails' : ActorMethod<[bigint, string], undefined>,
   'updateBookingStatus' : ActorMethod<[bigint, BookingStatus], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

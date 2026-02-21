@@ -2,71 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-build-user-authentication-system-using-internet-identity-for-laborers-to-securely-log-in-and-manage-their-profiles",
-      "featureTitle": "Build user authentication system using Internet Identity for laborers to securely log in and manage their profiles",
+      "featureId": "feature-debug-and-fix-the-labour-not-found-error-displayed-on-the-booking-creation-page-createbookingpage-tsx-by-investigating-the-laborer-data-fetching-logic-verifying-the-laborid-parameter-is-correctly-passed-and-parsed-and-ensuring-the-backend-getlaborerbyid-function-returns-the-correct-laborer-data",
+      "featureTitle": "Debug and fix the 'labour not found' error displayed on the booking creation page (CreateBookingPage.tsx) by investigating the laborer data fetching logic, verifying the laborId parameter is correctly passed and parsed, and ensuring the backend getLaborerById function returns the correct laborer data",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/ProfileSetupModal.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-laborer-profile-management-page-where-users-can-view-and-edit-their-profile-information-services-offered-and-availability",
-      "featureTitle": "Create a laborer profile management page where users can view and edit their profile information, services offered, and availability",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/ProfilePage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-build-a-neighbor-laborer-discovery-interface-that-displays-nearby-laborers-with-their-skills-availability-and-allows-filtering-by-service-type-and-location",
-      "featureTitle": "Build a neighbor laborer discovery interface that displays nearby laborers with their skills, availability, and allows filtering by service type and location",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/DiscoveryPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-booking-request-interface-where-laborers-can-select-another-laborer-choose-service-details-specify-date-time-and-submit-booking-requests",
-      "featureTitle": "Create a booking request interface where laborers can select another laborer, choose service details, specify date/time, and submit booking requests",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/BookingSuccessPage.tsx",
+        "frontend/src/hooks/useQueries.ts",
         "frontend/src/pages/CreateBookingPage.tsx"
       ],
       "components": [
@@ -78,16 +17,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-7"
+        "REQ-24"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-build-a-bookings-dashboard-showing-both-outgoing-booking-requests-requests-made-to-others-and-incoming-booking-requests-requests-received-from-others-with-status-indicators-and-action-buttons",
-      "featureTitle": "Build a bookings dashboard showing both outgoing booking requests (requests made to others) and incoming booking requests (requests received from others) with status indicators and action buttons",
+      "featureId": "feature-add-comprehensive-error-logging-to-the-createbookingpage-tsx-laborer-data-fetching-flow-to-capture-the-laborid-parameter-value-query-execution-status-backend-response-and-any-error-details-to-aid-in-debugging-the-labour-not-found-issue",
+      "featureTitle": "Add comprehensive error logging to the CreateBookingPage.tsx laborer data fetching flow to capture the laborId parameter value, query execution status, backend response, and any error details to aid in debugging the 'labour not found' issue",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/BookingsDashboard.tsx"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/CreateBookingPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -98,29 +37,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-design-a-cohesive-visual-theme-with-warm-professional-colors-and-clear-typography-that-conveys-trust-and-accessibility-for-labor-workers-avoiding-blue-and-purple-color-schemes",
-      "featureTitle": "Design a cohesive visual theme with warm, professional colors and clear typography that conveys trust and accessibility for labor workers, avoiding blue and purple color schemes",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/Layout.tsx",
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
+        "REQ-25"
       ],
       "confidence": "high"
     }

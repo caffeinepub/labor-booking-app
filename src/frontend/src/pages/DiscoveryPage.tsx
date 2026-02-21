@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Loader2, MapPin, Briefcase, Phone } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import type { LaborerData } from '../backend';
 
 export default function DiscoveryPage() {
@@ -24,7 +25,24 @@ export default function DiscoveryPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[DiscoveryPage] Search submitted with location:', location);
     setSearchLocation(location);
+  };
+
+  const handleBookNowClick = (laborerId: string, laborerName: string) => {
+    console.log('[DiscoveryPage] Book Now clicked for laborer:', laborerName, 'ID:', laborerId);
+    
+    try {
+      console.log('[DiscoveryPage] Attempting navigation to:', `/book/${laborerId}`);
+      navigate({ 
+        to: '/book/$laborerId', 
+        params: { laborerId } 
+      });
+      console.log('[DiscoveryPage] Navigation initiated successfully');
+    } catch (error) {
+      console.error('[DiscoveryPage] Navigation error:', error);
+      toast.error('Failed to navigate to booking page. Please try again.');
+    }
   };
 
   const getAvailabilityColor = (status: LaborerData['availability']['status']) => {
@@ -149,8 +167,11 @@ export default function DiscoveryPage() {
                   {laborer.contact}
                 </div>
 
-                <Button asChild className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-                  <Link to="/book/$laborerId" params={{ laborerId: laborer.id.toString() }}>Book Now</Link>
+                <Button 
+                  onClick={() => handleBookNowClick(laborer.id.toString(), laborer.name)}
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+                >
+                  Book Now
                 </Button>
               </CardContent>
             </Card>

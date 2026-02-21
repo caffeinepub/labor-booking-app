@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-profilepage-tsx-laborer-profile-form-to-include-a-mobile-number-input-field-that-allows-users-to-enter-and-edit-their-contact-phone-number",
-      "featureTitle": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
+      "featureId": "feature-debug-and-fix-the-outgoing-service-generation-issue-in-bookingsdashboard-tsx-where-bookings-created-for-a-target-laborer-where-the-current-user-is-the-requester-are-not-appearing-in-the-outgoing-requests-section-investigating-the-booking-data-flow-from-creation-through-query-refetch-and-display-logic",
+      "featureTitle": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section, investigating the booking data flow from creation through query refetch and display logic",
       "files": [
-        "frontend/src/pages/ProfilePage.tsx"
+        "frontend/src/pages/BookingsDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -16,15 +16,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-39"
+        "REQ-46"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-the-labour-id-prominently-on-the-profilepage-tsx-for-each-laborer-showing-it-as-a-read-only-identifier-field-that-helps-users-reference-their-unique-id",
-      "featureTitle": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
+      "featureId": "feature-add-comprehensive-debug-logging-to-the-bookingsdashboard-tsx-component-to-track-the-complete-data-flow-for-outgoing-bookings-including-query-fetch-status-booking-array-contents-principal-comparisons-for-classification-and-timing-of-re-renders-after-booking-creation",
+      "featureTitle": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings, including query fetch status, booking array contents, principal comparisons for classification, and timing of re-renders after booking creation",
       "files": [
-        "frontend/src/pages/ProfilePage.tsx"
+        "frontend/src/pages/BookingsDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -35,15 +35,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-40"
+        "REQ-47"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-mobile-number-display-to-the-discoverypage-tsx-laborer-cards-so-users-can-see-contact-information-when-browsing-available-laborers",
-      "featureTitle": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
+      "featureId": "feature-investigate-and-fix-any-timing-issues-or-race-conditions-in-bookingsdashboard-tsx-that-might-prevent-newly-created-bookings-from-appearing-immediately-in-the-outgoing-requests-section-ensuring-proper-react-query-cache-synchronization",
+      "featureTitle": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section, ensuring proper React Query cache synchronization",
       "files": [
-        "frontend/src/pages/DiscoveryPage.tsx"
+        "frontend/src/pages/BookingsDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -54,45 +54,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-41"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-display-both-the-provider-s-and-requester-s-mobile-numbers-in-the-bookingdetailpage-tsx-to-facilitate-direct-communication-between-the-two-parties-involved-in-the-booking",
-      "featureTitle": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
-      "files": [
-        "frontend/src/pages/BookingDetailPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-42"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-verify-that-the-createbooking-mutation-in-usequeries-ts-properly-invalidates-the-booking-queries-cache-after-successful-creation-ensuring-the-bookingsdashboard-refetches-and-displays-the-new-outgoing-booking-immediately",
-      "featureTitle": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
-      "files": [
-        "frontend/src/hooks/useQueries.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-45"
+        "REQ-49"
       ],
       "confidence": "high"
     }

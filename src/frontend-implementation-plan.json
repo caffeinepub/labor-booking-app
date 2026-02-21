@@ -1,120 +1,88 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add unique labour IDs, mobile number fields, and fix outgoing bookings display",
+  "title": "Fix outgoing service generation for target laborer",
   "requirements": [
     {
-      "id": "REQ-39",
-      "summary": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
+      "id": "REQ-46",
+      "summary": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section",
       "acceptanceCriteria": [
-        "Profile form displays mobile number input field",
-        "Users can enter and save their mobile number",
-        "Mobile number persists correctly when profile is saved"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/ProfilePage.tsx",
-          "operation": "modify",
-          "description": "Add a mobile number input field to the laborer profile form. The field should be placed near the contact field. Include proper form state management using React Hook Form to bind the mobileNumber field to the form data. Ensure the mobile number value is included in the laborerInput object when calling saveLaborerMutation. The backend interface shows that LaborerInput.mobileNumber is a required string field, so validate that it is not empty before submission."
-        }
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "summary": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
-      "acceptanceCriteria": [
-        "Labour ID is displayed on the profile page",
-        "Labour ID field is read-only and cannot be edited by users",
-        "Labour ID is formatted clearly and prominently"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/ProfilePage.tsx",
-          "operation": "modify",
-          "description": "Display the laborId field from the laborer data in a read-only format near the top of the profile form. According to the backend interface, LaborerData includes a laborId string field. Show this prominently with a label like 'Labour ID' and render it in a disabled input or display-only component. Style it to stand out from editable fields, using a different background or border to indicate it is system-generated and immutable."
-        }
-      ]
-    },
-    {
-      "id": "REQ-41",
-      "summary": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
-      "acceptanceCriteria": [
-        "Laborer cards on discovery page show mobile number",
-        "Mobile number is displayed in a clear, accessible format",
-        "Mobile number appears alongside other laborer information"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/DiscoveryPage.tsx",
-          "operation": "modify",
-          "description": "Add the mobile number field to the laborer card display. According to the backend interface, LaborerData includes a mobileNumber string field. Display this below or near the existing contact information on each laborer card. Format it with an icon (e.g., phone icon) and label for clarity. Ensure the mobile number is easily readable and accessible for users browsing available laborers."
-        }
-      ]
-    },
-    {
-      "id": "REQ-42",
-      "summary": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
-      "acceptanceCriteria": [
-        "Booking detail page shows the provider's mobile number",
-        "Booking detail page shows the requester's mobile number",
-        "Mobile numbers are clearly labeled and formatted for easy reference"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/BookingDetailPage.tsx",
-          "operation": "modify",
-          "description": "Display mobile numbers for both the requester and the target laborer (provider) on the booking detail page. The page currently fetches user profiles using getUserProfile queries. Extend these queries or add new ones to fetch the full LaborerData for both the requester and targetLaborer principals using getLaborerById. Extract the mobileNumber field from each LaborerData object and display them with clear labels like 'Requester Contact' and 'Provider Contact'. Format with phone icons and ensure both numbers are prominently visible for easy communication."
-        }
-      ]
-    },
-    {
-      "id": "REQ-43",
-      "summary": "Debug and fix the outgoing bookings display issue in BookingsDashboard.tsx where outgoing bookings do not appear after successful booking creation, investigating the booking classification logic, principal matching, query refetching, and ensuring newly created bookings immediately appear in the outgoing requests section",
-      "acceptanceCriteria": [
-        "Newly created bookings appear immediately in outgoing requests section",
-        "Outgoing bookings classification logic correctly identifies user as requester",
-        "Query invalidation triggers proper refetch of booking data",
-        "All outgoing bookings display without missing or delayed entries"
+        "When a laborer creates a booking request for another laborer (target laborer), the booking immediately appears in the requester's outgoing requests section",
+        "The outgoing requests section correctly identifies bookings where the current user is the requester",
+        "Newly created bookings are displayed without requiring manual page refresh",
+        "The booking classification logic properly distinguishes between outgoing and incoming bookings based on requester/provider principals"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/BookingsDashboard.tsx",
           "operation": "modify",
-          "description": "Fix the outgoing bookings classification logic to ensure newly created bookings appear immediately. Review the existing console.log statements that track booking filtering and principal matching. Verify that the identity.getPrincipal().toString() comparison correctly matches booking.requester.toString(). Check that the useGetCallerLaborer query provides accurate booking data and that the outgoingBookings array is populated correctly. Ensure the query invalidation from createBooking mutation triggers a proper refetch. Consider race conditions where the query may execute before the backend fully processes the new booking. Add additional logging if needed to trace the exact flow from mutation success to query refetch completion."
+          "description": "Fix the outgoing bookings classification logic to correctly identify bookings where the current user is the requester. Review the principal comparison logic in the filtering functions that separate outgoing vs incoming bookings. Ensure that bookings where requester matches the current user's principal are properly classified as outgoing requests. Verify the filter functions are correctly comparing Principal objects (may need .toString() for proper comparison). Add enhanced debug logging to track booking classification, principal comparisons, and the number of outgoing bookings found after query refetch."
+        },
+        {
+          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "operation": "modify",
+          "description": "Review and fix the component's React Query integration to ensure proper re-rendering after new bookings are created. Verify that the bookings query properly refetches when invalidated and that the component state updates with the new booking data. Check for any stale closure issues or race conditions in the filtering logic that might prevent newly fetched bookings from being properly classified. Ensure the useGetCallerLaborer query result is properly used in the filtering logic without stale references."
         }
       ]
     },
     {
-      "id": "REQ-44",
-      "summary": "Add comprehensive logging to the BookingsDashboard.tsx outgoing bookings filtering and rendering flow to capture when bookings are fetched, how they are classified as outgoing, and any timing issues that prevent immediate display after creation",
+      "id": "REQ-47",
+      "summary": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings",
       "acceptanceCriteria": [
-        "Console logs capture the complete booking fetch and classification flow",
-        "Logs show the timing of query refetch after booking creation",
+        "Console logs capture when bookings query is refetched after a new booking is created",
+        "Logs show the principal comparison logic that classifies bookings as outgoing vs incoming",
         "Logs display the number of outgoing bookings found and their IDs",
-        "Error conditions or data inconsistencies are logged with context"
+        "Logs indicate whether the query invalidation and refetch successfully triggered after booking creation"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/BookingsDashboard.tsx",
           "operation": "modify",
-          "description": "Enhance existing console logging to provide comprehensive visibility into the booking filtering and classification process. Add logs that capture: (1) when the callerLaborer query completes and how many total bookings are returned, (2) the current user's principal for comparison, (3) each booking's requester and targetLaborer principals during filtering, (4) the final count of outgoing vs incoming bookings, (5) timing information showing when queries are triggered and completed, and (6) any error states or null/undefined values. Log before and after filtering operations to trace the exact data transformation. Include booking IDs in logs to track specific bookings through the flow."
+          "description": "Add comprehensive console.log statements throughout the component to debug the booking classification flow. Log: (1) when the component renders and bookings data changes, (2) the current user's principal from identity, (3) the laborer data principal if available, (4) each booking's requester and targetLaborer principals with their string representations, (5) the result of principal comparisons for each booking (is it outgoing or incoming?), (6) the final counts and IDs of outgoing vs incoming bookings, (7) query fetch status and refetch events. Structure logs with clear prefixes like '[BookingsDashboard]' for easy filtering in console."
         }
       ]
     },
     {
-      "id": "REQ-45",
-      "summary": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+      "id": "REQ-48",
+      "summary": "Verify that the createBooking mutation in useQueries.ts properly triggers query invalidation for the 'bookings' query key after successful booking creation",
       "acceptanceCriteria": [
-        "Query invalidation is triggered after createBooking success",
-        "Booking queries refetch immediately after invalidation",
-        "New booking appears in dashboard without requiring manual refresh",
-        "Cache invalidation includes all relevant booking query keys"
+        "The onSuccess callback in createBooking mutation explicitly invalidates the bookings query",
+        "Query invalidation triggers an immediate refetch of all bookings",
+        "The BookingsDashboard receives updated booking data including the newly created booking",
+        "No manual refresh is required for the new booking to appear in the outgoing section"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Review and verify the createBooking mutation's onSuccess callback to ensure it properly invalidates the callerLaborer query. The mutation should call queryClient.invalidateQueries with the correct query key (likely ['callerLaborer']) to trigger a refetch of the booking data. Ensure the invalidation happens after the mutation succeeds and before navigation. Consider adding a small delay or await on the invalidation if there are timing issues with backend consistency. Also verify that the query invalidation includes any other queries that depend on booking data, such as specific laborer queries if they cache booking information. Add console logging to confirm when invalidation is triggered and when the subsequent refetch completes."
+          "description": "Review and enhance the createBooking mutation to ensure it properly invalidates the bookings query after successful booking creation. Verify that the onSuccess callback includes queryClient.invalidateQueries for the laborer data query key (which contains the bookings array). Add debug logging to the onSuccess callback to confirm when invalidation occurs. Ensure the query key used for invalidation matches the query key used in useGetCallerLaborer (which fetches laborer data including bookings). Consider invalidating both the laborer query and any specific bookings-related queries to ensure comprehensive cache updates."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add console logging to the createBooking mutation callbacks to track the mutation lifecycle: log when mutation starts, when it succeeds (in onSuccess), when it errors (in onError), and confirm that query invalidation is triggered. Log the booking ID returned from the backend and the queries being invalidated. This helps verify the complete flow from booking creation through cache invalidation to dashboard update."
+        }
+      ]
+    },
+    {
+      "id": "REQ-49",
+      "summary": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section",
+      "acceptanceCriteria": [
+        "The dashboard properly handles the transition from booking creation to display",
+        "No race conditions exist between query invalidation and component re-render",
+        "The outgoing bookings filter function correctly processes newly added bookings",
+        "Component state properly reflects the updated bookings array after refetch"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "operation": "modify",
+          "description": "Review the component's dependency on useGetCallerLaborer query results and ensure proper handling of loading/refetching states. Check if the outgoing bookings filtering logic might be using stale data during the refetch transition. Consider adding explicit handling for the query's isFetching or isRefetching states to ensure the UI properly reflects when new data is being loaded. Verify that the filtering functions (outgoing vs incoming) are not capturing stale closure variables and are using the latest query results. Add useEffect or useMemo hooks if needed to properly derive outgoing/incoming booking lists from the latest laborer data."
+        },
+        {
+          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "operation": "modify",
+          "description": "Ensure the principal comparison logic is robust and handles all edge cases. Verify that Principal objects from the backend are being compared correctly (using .toString() or .toText() for string comparison rather than direct object comparison). Add defensive checks for null/undefined principals and proper type guards. Consider memoizing the principal comparison results to avoid redundant calculations while ensuring the memoization doesn't create stale data issues."
         }
       ]
     }

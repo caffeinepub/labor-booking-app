@@ -1,119 +1,70 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T19:20:00.457Z",
+  "generatedAt": "2026-02-21T19:38:27.155Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 9,
-    "implemented": 5,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-37",
-        "summary": "Add a unique labour ID field to the Laborer type in backend/main.mo that is automatically generated and assigned when a new laborer profile is created, ensuring each laborer has a unique, human-readable identifier (e.g., 'LAB-00001', 'LAB-00002') that can be used for reference and communication",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-38",
-        "summary": "Add a mobile number field to the Laborer type in backend/main.mo to store contact information for each laborer, including validation for proper phone number format",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-39",
-        "summary": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
+        "id": "REQ-46",
+        "summary": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section, investigating the booking data flow from creation through query refetch and display logic",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/ProfilePage.tsx"
+          "frontend/src/pages/BookingsDashboard.tsx",
+          "frontend/src/pages/BookingsDashboard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/ProfilePage.tsx"
+          "frontend/src/pages/BookingsDashboard.tsx",
+          "frontend/src/pages/BookingsDashboard.tsx"
         ]
       },
       {
-        "id": "REQ-40",
-        "summary": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
+        "id": "REQ-47",
+        "summary": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings, including query fetch status, booking array contents, principal comparisons for classification, and timing of re-renders after booking creation",
         "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/ProfilePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/ProfilePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-41",
-        "summary": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/DiscoveryPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/DiscoveryPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-42",
-        "summary": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/BookingDetailPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/BookingDetailPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-43",
-        "summary": "Debug and fix the outgoing bookings display issue in BookingsDashboard.tsx where outgoing bookings do not appear after successful booking creation, investigating the booking classification logic, principal matching, query refetching, and ensuring newly created bookings immediately appear in the outgoing requests section",
-        "status": "missing",
         "plannedFiles": [
           "frontend/src/pages/BookingsDashboard.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/pages/BookingsDashboard.tsx"
+        ]
       },
       {
-        "id": "REQ-44",
-        "summary": "Add comprehensive logging to the BookingsDashboard.tsx outgoing bookings filtering and rendering flow to capture when bookings are fetched, how they are classified as outgoing, and any timing issues that prevent immediate display after creation",
+        "id": "REQ-48",
+        "summary": "Verify that the createBooking mutation in useQueries.ts properly triggers query invalidation for the 'bookings' query key after successful booking creation, ensuring the BookingsDashboard automatically refetches and displays the new outgoing booking",
         "status": "missing",
         "plannedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": []
       },
       {
-        "id": "REQ-45",
-        "summary": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+        "id": "REQ-49",
+        "summary": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section, ensuring proper React Query cache synchronization",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/BookingsDashboard.tsx",
+          "frontend/src/pages/BookingsDashboard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/BookingsDashboard.tsx",
+          "frontend/src/pages/BookingsDashboard.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/BookingDetailPage.tsx",
-    "frontend/src/pages/DiscoveryPage.tsx",
-    "frontend/src/pages/ProfilePage.tsx",
+    "frontend/src/pages/BookingsDashboard.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

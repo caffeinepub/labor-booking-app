@@ -1,17 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add unique labour IDs and mobile number fields to laborer profiles, display contact information throughout the app, and fix the issue where outgoing bookings don't appear after creation.
+**Goal:** Fix the issue where outgoing service bookings are not appearing in the BookingsDashboard when a laborer creates a booking for another laborer (target laborer).
 
 **Planned changes:**
-- Add unique labour ID field to Laborer type with automatic sequential generation (LAB-00001, LAB-00002, etc.)
-- Add mobile number field to Laborer type with basic validation
-- Display labour ID (read-only) on profile page
-- Add mobile number input field to profile form
-- Show mobile numbers on discovery page laborer cards
-- Display both provider and requester mobile numbers on booking detail page
-- Debug and fix outgoing bookings display issue in BookingsDashboard
-- Add comprehensive logging to outgoing bookings filtering and rendering flow
-- Verify createBooking mutation properly invalidates query cache for immediate display
+- Add comprehensive debug logging to BookingsDashboard.tsx to track data flow, query refetch status, and booking classification logic
+- Verify and fix query invalidation in the createBooking mutation to ensure automatic refetch after booking creation
+- Investigate and resolve timing issues or race conditions preventing newly created outgoing bookings from displaying immediately
+- Fix the booking classification logic to correctly identify and display bookings where the current user is the requester
 
-**User-visible outcome:** Each laborer has a unique labour ID and mobile number on their profile. Contact information is visible on discovery cards and booking details for easy communication. Newly created bookings appear immediately in the outgoing requests section without requiring manual refresh.
+**User-visible outcome:** When a laborer creates a booking request for another laborer, the booking immediately appears in their outgoing requests section without requiring a manual page refresh.

@@ -7,16 +7,17 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Loader2, Calendar, MapPin, Clock, User, Filter, ArrowUpDown } from 'lucide-react';
+import { Loader2, Calendar, MapPin, Clock, User, Filter, ArrowUpDown, AlertCircle } from 'lucide-react';
 import { useNavigate, Link } from '@tanstack/react-router';
 import { BookingStatus, type Booking } from '../backend';
 import BookingHistorySection from '../components/BookingHistorySection';
 import { toast } from 'sonner';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 
 export default function BookingsDashboard() {
   const { identity } = useInternetIdentity();
   const navigate = useNavigate();
-  const { data: laborer, isLoading } = useGetCallerLaborer();
+  const { data: laborer, isLoading, isRefetching } = useGetCallerLaborer();
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateBookingStatus();
   
   const [statusFilter, setStatusFilter] = useState<BookingStatus | 'all'>('all');
@@ -33,8 +34,10 @@ export default function BookingsDashboard() {
   // Enhanced logging for debugging outgoing bookings
   console.log('═══════════════════════════════════════════════════════════');
   console.log('[BookingsDashboard] 📊 DASHBOARD STATE');
+  console.log('[BookingsDashboard] Timestamp:', new Date().toISOString());
   console.log('[BookingsDashboard] Current user principal:', myPrincipal);
   console.log('[BookingsDashboard] Laborer data loaded:', !!laborer);
+  console.log('[BookingsDashboard] Is refetching:', isRefetching);
   console.log('[BookingsDashboard] Total bookings in laborer record:', laborer?.bookings.length || 0);
   console.log('═══════════════════════════════════════════════════════════');
 
@@ -75,6 +78,21 @@ export default function BookingsDashboard() {
   console.log('[BookingsDashboard] Incoming bookings count:', incomingBookings.length);
   console.log('═══════════════════════════════════════════════════════════');
 
+  // Check if there's a backend architecture limitation
+  const hasBackendLimitation = outgoingBookings.length === 0 && laborer?.bookings && laborer.bookings.length > 0;
+  
+  if (hasBackendLimitation) {
+    console.warn('═══════════════════════════════════════════════════════════');
+    console.warn('[BookingsDashboard] ⚠️ BACKEND ARCHITECTURE LIMITATION DETECTED');
+    console.warn('[BookingsDashboard] No outgoing bookings found, but laborer has bookings');
+    console.warn('[BookingsDashboard] REASON: Bookings are stored ONLY in the target laborer\'s record');
+    console.warn('[BookingsDashboard] IMPACT: Requesters cannot see their outgoing bookings');
+    console.warn('[BookingsDashboard] SOLUTION: Backend needs to store bookings in BOTH requester and target laborer records');
+    console.warn('[BookingsDashboard] Current bookings in record:', laborer.bookings.length);
+    console.warn('[BookingsDashboard] All are incoming (user is target laborer)');
+    console.warn('═══════════════════════════════════════════════════════════');
+  }
+
   const { filterAndSortBookings } = useBookingFilters();
 
   const filteredOutgoing = filterAndSortBookings(outgoingBookings, statusFilter, sortOrder);
@@ -103,26 +121,6 @@ export default function BookingsDashboard() {
   console.log('[BookingsDashboard]   - History outgoing:', historyOutgoing.length);
   console.log('[BookingsDashboard]   - Active incoming:', activeIncoming.length);
   console.log('[BookingsDashboard]   - History incoming:', historyIncoming.length);
-
-  if (historyOutgoing.length > 0) {
-    console.log('[BookingsDashboard] 📜 Outgoing history bookings:');
-    historyOutgoing.forEach((booking) => {
-      console.log('[BookingsDashboard]   -', {
-        id: booking.id.toString(),
-        status: booking.status,
-        serviceType: booking.serviceType,
-        targetLaborer: booking.targetLaborer.toString(),
-      });
-    });
-  } else {
-    console.warn('═══════════════════════════════════════════════════════════');
-    console.warn('[BookingsDashboard] ⚠️ BACKEND ARCHITECTURE LIMITATION DETECTED');
-    console.warn('[BookingsDashboard] No outgoing history bookings found');
-    console.warn('[BookingsDashboard] REASON: Bookings are stored ONLY in the target laborer\'s record');
-    console.warn('[BookingsDashboard] IMPACT: Requesters cannot see their outgoing bookings');
-    console.warn('[BookingsDashboard] SOLUTION: Backend needs to store bookings in BOTH requester and target laborer records');
-    console.warn('═══════════════════════════════════════════════════════════');
-  }
 
   const getStatusColor = (status: BookingStatus) => {
     switch (status) {
@@ -364,6 +362,17 @@ export default function BookingsDashboard() {
         <p className="text-muted-foreground">Manage your booking requests and jobs</p>
       </div>
 
+      {hasBackendLimitation && (
+        <Alert className="mb-6 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
+          <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <AlertTitle className="text-amber-800 dark:text-amber-300">Outgoing Bookings Not Available</AlertTitle>
+          <AlertDescription className="text-amber-700 dark:text-amber-400">
+            Due to a backend limitation, outgoing booking requests you create for other laborers are not currently visible in your dashboard. 
+            Only incoming requests (where others book you) are displayed. This is a known issue that requires a backend update to resolve.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-muted-foreground" />
@@ -418,8 +427,8 @@ export default function BookingsDashboard() {
             <>
               {activeIncoming.length > 0 && (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Active Bookings</h2>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <h2 className="text-xl font-semibold mb-4">Active Requests</h2>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {activeIncoming.map((booking) => (
                       <BookingCard key={booking.id.toString()} booking={booking} isIncoming={true} />
                     ))}
@@ -437,20 +446,21 @@ export default function BookingsDashboard() {
         <TabsContent value="outgoing" className="space-y-6">
           {activeOutgoing.length === 0 && historyOutgoing.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
-                No outgoing bookings yet.{' '}
-                <a href="/discover" className="text-amber-600 hover:underline">
-                  Find laborers
-                </a>{' '}
-                to book.
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground mb-4">No outgoing booking requests yet</p>
+                {hasBackendLimitation && (
+                  <p className="text-sm text-amber-600 dark:text-amber-400">
+                    Note: Outgoing bookings are currently not tracked due to a backend limitation.
+                  </p>
+                )}
               </CardContent>
             </Card>
           ) : (
             <>
               {activeOutgoing.length > 0 && (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Active Bookings</h2>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <h2 className="text-xl font-semibold mb-4">Active Requests</h2>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {activeOutgoing.map((booking) => (
                       <BookingCard key={booking.id.toString()} booking={booking} isIncoming={false} />
                     ))}

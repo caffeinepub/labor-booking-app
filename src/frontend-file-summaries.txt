@@ -1,0 +1,14 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, defining all routes (landing, profile, discovery, booking, bookings dashboard) and integrating the Layout wrapper with profile setup modal.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including user profiles, laborer profiles, discovery queries, booking creation, and booking status updates with proper cache invalidation.",
+  "frontend/src/components/Layout.tsx": "Main layout component with responsive header navigation, authentication button, mobile menu, and footer with caffeine.ai attribution and branding using the handshake icon.",
+  "frontend/src/components/ProfileSetupModal.tsx": "Modal dialog that prompts new authenticated users to enter their name on first login, preventing dismissal until profile is created.",
+  "frontend/src/pages/LandingPage.tsx": "Landing page with hero section using generated background image, features overview, and call-to-action sections showcasing the labor booking platform.",
+  "frontend/src/pages/ProfilePage.tsx": "Comprehensive laborer profile management page with proper Availability discriminated union type construction for status updates.",
+  "frontend/src/pages/DiscoveryPage.tsx": "Laborer discovery interface with location-based search, displaying laborer cards with proper TanStack Router Link params syntax for navigation to booking page.",
+  "frontend/src/pages/CreateBookingPage.tsx": "Booking request form page accepting service type, date/time, duration, and location with validation and submission to backend.",
+  "frontend/src/pages/BookingSuccessPage.tsx": "Success confirmation page displayed after booking creation with navigation options to view bookings or find more laborers.",
+  "frontend/src/pages/BookingsDashboard.tsx": "Bookings management dashboard with tabs for incoming and outgoing bookings, using proper BookingStatus enum values for status updates and comparisons.",
+  "frontend/src/index.css": "Global styles with warm earth-tone OKLCH color system (amber, orange, stone) for both light and dark modes, avoiding blue and purple colors.",
+  "frontend/tailwind.config.js": "Tailwind configuration with warm color palette, custom font family (Inter), and extended design tokens matching the earth-tone aesthetic."
+}

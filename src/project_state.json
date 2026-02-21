@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Labor booking app where laborers can book services from neighboring laborers",
+  "architectural_notes": [
+    "User type: Laborers (both service providers and consumers)",
+    "Core functionality: Peer-to-peer labor booking marketplace"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Hero background image showing diverse laborers at work in warm lighting (hero-bg.dim_1920x1080.png)\n- Simple handshake icon representing booking connection in earth tones (handshake-icon.dim_128x128.png)",
+  "existing_features": [
+    {
+      "id": "feature-build-user-authentication-system-using-internet-identity-for-laborers-to-securely-log-in-and-manage-their-profiles",
+      "title": "Build user authentication system using Internet Identity for laborers to securely log in and manage their profiles",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-laborer-profile-management-page-where-users-can-view-and-edit-their-profile-information-services-offered-and-availability",
+      "title": "Create a laborer profile management page where users can view and edit their profile information, services offered, and availability",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-neighbor-laborer-discovery-interface-that-displays-nearby-laborers-with-their-skills-availability-and-allows-filtering-by-service-type-and-location",
+      "title": "Build a neighbor laborer discovery interface that displays nearby laborers with their skills, availability, and allows filtering by service type and location",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-booking-request-interface-where-laborers-can-select-another-laborer-choose-service-details-specify-date-time-and-submit-booking-requests",
+      "title": "Create a booking request interface where laborers can select another laborer, choose service details, specify date/time, and submit booking requests",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-bookings-dashboard-showing-both-outgoing-booking-requests-requests-made-to-others-and-incoming-booking-requests-requests-received-from-others-with-status-indicators-and-action-buttons",
+      "title": "Build a bookings dashboard showing both outgoing booking requests (requests made to others) and incoming booking requests (requests received from others) with status indicators and action buttons",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-cohesive-visual-theme-with-warm-professional-colors-and-clear-typography-that-conveys-trust-and-accessibility-for-labor-workers-avoiding-blue-and-purple-color-schemes",
+      "title": "Design a cohesive visual theme with warm, professional colors and clear typography that conveys trust and accessibility for labor workers, avoiding blue and purple color schemes",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Labor booking system - laborers can book services from other laborers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Neighbor-based laborer discovery and booking",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Create a backend data model for laborers that stores profile information including name, skills/services offered, location, contact details, and availability status",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Implement backend booking system that allows laborers to create booking requests for other laborers, including service type, date/time, duration, and status tracking (pending, confirmed, completed, cancelled)",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Create neighbor discovery functionality that filters and displays laborers based on proximity or neighborhood location",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Labor Booking App",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

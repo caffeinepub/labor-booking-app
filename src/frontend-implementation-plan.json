@@ -1,0 +1,239 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Labor Connect - Frontend Implementation",
+  "requirements": [
+    {
+      "id": "REQ-4",
+      "summary": "Implement Internet Identity authentication with user profile setup flow",
+      "acceptanceCriteria": [
+        "Laborers can authenticate using Internet Identity",
+        "Authenticated users can access only their own profile and bookings",
+        "Session state persists across page refreshes"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LoginButton.tsx",
+          "operation": "create",
+          "description": "Use the authorization component to support Internet Identity authentication. Create login/logout button with proper state management. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ProfileSetupModal.tsx",
+          "operation": "create",
+          "description": "Use the authorization component to support first-time user profile setup. Create modal that prompts new users to enter their name when they first log in. Implement proper loading state checks to prevent modal flash. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useGetCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Use the authorization component to support user profile retrieval. Create custom hook that fetches the current user profile with proper loading states and actor dependency handling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useSaveCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Use the authorization component to support user profile saving. Create mutation hook for saving user profile data. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Use the authorization component to support authentication state management. Integrate LoginButton and ProfileSetupModal into the main app layout. Add authentication checks to ensure users must be logged in before accessing application data. Clear cached data on logout. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Create laborer profile management interface for viewing and editing profile information",
+      "acceptanceCriteria": [
+        "Profile page displays all laborer information",
+        "Users can edit and save profile changes",
+        "Form validation ensures required fields are filled",
+        "Changes are reflected immediately after saving"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ProfilePage.tsx",
+          "operation": "create",
+          "description": "Create profile management page that displays and edits laborer profile information including name, skills, services, location, contact details, and availability status. Include form validation for required fields."
+        },
+        {
+          "path": "frontend/src/hooks/useGetCallerLaborer.ts",
+          "operation": "create",
+          "description": "Create hook to fetch the current user's laborer profile data using getCallerLaborer backend capability"
+        },
+        {
+          "path": "frontend/src/hooks/useSaveCallerLaborer.ts",
+          "operation": "create",
+          "description": "Create mutation hook for saving laborer profile changes using saveCallerLaborer backend capability with optimistic updates and cache invalidation"
+        },
+        {
+          "path": "frontend/src/components/ServiceList.tsx",
+          "operation": "create",
+          "description": "Create component for managing the list of services offered with name, description, and price fields. Support adding and removing services."
+        },
+        {
+          "path": "frontend/src/components/AvailabilitySelector.tsx",
+          "operation": "create",
+          "description": "Create component for selecting availability status (available, unavailable, onJob, pending, custom) with appropriate UI controls"
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add route registration for ProfilePage in the application router and include navigation link in the main layout"
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Build neighbor laborer discovery interface with filtering capabilities",
+      "acceptanceCriteria": [
+        "Displays list of laborers with profile information",
+        "Users can filter by service type and location",
+        "Each laborer card shows key information (name, skills, availability)",
+        "Interface is responsive and easy to navigate"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DiscoveryPage.tsx",
+          "operation": "create",
+          "description": "Create discovery page that displays nearby laborers with filtering controls for service type and location. Show laborer cards with key information and link to booking flow."
+        },
+        {
+          "path": "frontend/src/hooks/useGetLaborersByNeighborhood.ts",
+          "operation": "create",
+          "description": "Create hook to fetch laborers filtered by neighborhood using getLaborersByNeighborhood backend capability"
+        },
+        {
+          "path": "frontend/src/hooks/useGetBookablesNearLocation.ts",
+          "operation": "create",
+          "description": "Create hook to fetch laborers near a location with radius using getBookablesNearLocation backend capability"
+        },
+        {
+          "path": "frontend/src/components/LaborerCard.tsx",
+          "operation": "create",
+          "description": "Create card component displaying laborer information including name, skills, services, availability status, and location with a button to initiate booking"
+        },
+        {
+          "path": "frontend/src/components/DiscoveryFilters.tsx",
+          "operation": "create",
+          "description": "Create filter component with inputs for service type selection and location/neighborhood search"
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add route registration for DiscoveryPage in the application router and include navigation link in the main layout"
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Create booking request interface for submitting service bookings",
+      "acceptanceCriteria": [
+        "Users can select a laborer from the discovery page to book",
+        "Booking form includes service type, date, time, and duration fields",
+        "Form validation prevents invalid bookings",
+        "Success confirmation is shown after booking creation"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/CreateBookingPage.tsx",
+          "operation": "create",
+          "description": "Create booking request page with form for service type, date, time, duration, and location. Include validation and success confirmation. Accept target laborer as URL parameter or route state."
+        },
+        {
+          "path": "frontend/src/hooks/useCreateBooking.ts",
+          "operation": "create",
+          "description": "Create mutation hook for creating booking requests using createBooking backend capability with proper error handling and success feedback"
+        },
+        {
+          "path": "frontend/src/components/BookingForm.tsx",
+          "operation": "create",
+          "description": "Create form component with inputs for service type, date/time picker, duration hours, and location with comprehensive validation"
+        },
+        {
+          "path": "frontend/src/pages/BookingSuccessPage.tsx",
+          "operation": "create",
+          "description": "Create success confirmation page displayed after successful booking creation with booking details and navigation options"
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add route registrations for CreateBookingPage and BookingSuccessPage in the application router. Wire CreateBookingPage to be accessible from LaborerCard component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Build bookings dashboard showing outgoing and incoming booking requests with status management",
+      "acceptanceCriteria": [
+        "Dashboard displays two sections: outgoing and incoming bookings",
+        "Each booking shows service, date, time, status, and laborer information",
+        "Laborers can confirm, cancel, or complete bookings with appropriate buttons",
+        "Status changes update in real-time",
+        "Past and current bookings are distinguishable"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "operation": "create",
+          "description": "Create bookings dashboard page with two sections for outgoing requests (made to others) and incoming requests (received from others). Display booking details with status indicators and action buttons."
+        },
+        {
+          "path": "frontend/src/hooks/useUpdateBookingStatus.ts",
+          "operation": "create",
+          "description": "Create mutation hook for updating booking status using updateBookingStatus backend capability with optimistic updates"
+        },
+        {
+          "path": "frontend/src/components/BookingCard.tsx",
+          "operation": "create",
+          "description": "Create booking card component displaying service type, date, time, duration, location, status, and laborer information with conditional action buttons based on booking direction and status"
+        },
+        {
+          "path": "frontend/src/components/BookingStatusBadge.tsx",
+          "operation": "create",
+          "description": "Create status badge component with appropriate styling for pending, confirmed, completed, and cancelled statuses"
+        },
+        {
+          "path": "frontend/src/utils/bookingHelpers.ts",
+          "operation": "create",
+          "description": "Create utility functions for categorizing bookings as outgoing vs incoming, determining available status transitions, and distinguishing past vs current bookings"
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add route registration for BookingsDashboard in the application router and include navigation link in the main layout"
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Apply cohesive visual theme with warm, professional colors avoiding blue and purple",
+      "acceptanceCriteria": [
+        "Consistent color palette applied across all pages",
+        "Typography is clear and readable",
+        "Design feels welcoming and professional",
+        "Visual hierarchy guides users through key actions"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Define warm, professional color palette (earth tones, oranges, greens) in CSS custom properties. Set base typography styles for clarity and readability. Avoid blue and purple color schemes."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Configure Tailwind theme with warm color palette (amber, orange, emerald, stone) as primary colors. Define typography scale for clear visual hierarchy. Ensure design conveys trust and accessibility."
+        },
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "create",
+          "description": "Create main layout component with consistent header, navigation, and footer styling. Wire generated hero background image from frontend/public/assets/generated/hero-bg.dim_1920x1080.png as a decorative element in the header or landing section. Wire generated handshake icon from frontend/public/assets/generated/handshake-icon.dim_128x128.png into the branding or navigation."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wrap all page routes with the Layout component to ensure consistent theme application across the application"
+        }
+      ]
+    }
+  ]
+}

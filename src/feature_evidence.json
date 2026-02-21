@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-debug-and-fix-the-labour-not-found-error-displayed-on-the-booking-creation-page-createbookingpage-tsx-by-investigating-the-laborer-data-fetching-logic-verifying-the-laborid-parameter-is-correctly-passed-and-parsed-and-ensuring-the-backend-getlaborerbyid-function-returns-the-correct-laborer-data",
-      "featureTitle": "Debug and fix the 'labour not found' error displayed on the booking creation page (CreateBookingPage.tsx) by investigating the laborer data fetching logic, verifying the laborId parameter is correctly passed and parsed, and ensuring the backend getLaborerById function returns the correct laborer data",
+      "featureId": "feature-update-the-profilepage-tsx-laborer-profile-form-to-include-a-mobile-number-input-field-that-allows-users-to-enter-and-edit-their-contact-phone-number",
+      "featureTitle": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/CreateBookingPage.tsx"
+        "frontend/src/pages/ProfilePage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,16 +16,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-24"
+        "REQ-39"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-comprehensive-error-logging-to-the-createbookingpage-tsx-laborer-data-fetching-flow-to-capture-the-laborid-parameter-value-query-execution-status-backend-response-and-any-error-details-to-aid-in-debugging-the-labour-not-found-issue",
-      "featureTitle": "Add comprehensive error logging to the CreateBookingPage.tsx laborer data fetching flow to capture the laborId parameter value, query execution status, backend response, and any error details to aid in debugging the 'labour not found' issue",
+      "featureId": "feature-display-the-labour-id-prominently-on-the-profilepage-tsx-for-each-laborer-showing-it-as-a-read-only-identifier-field-that-helps-users-reference-their-unique-id",
+      "featureTitle": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/CreateBookingPage.tsx"
+        "frontend/src/pages/ProfilePage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -37,7 +35,64 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-25"
+        "REQ-40"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-mobile-number-display-to-the-discoverypage-tsx-laborer-cards-so-users-can-see-contact-information-when-browsing-available-laborers",
+      "featureTitle": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
+      "files": [
+        "frontend/src/pages/DiscoveryPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-41"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-both-the-provider-s-and-requester-s-mobile-numbers-in-the-bookingdetailpage-tsx-to-facilitate-direct-communication-between-the-two-parties-involved-in-the-booking",
+      "featureTitle": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
+      "files": [
+        "frontend/src/pages/BookingDetailPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-42"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-verify-that-the-createbooking-mutation-in-usequeries-ts-properly-invalidates-the-booking-queries-cache-after-successful-creation-ensuring-the-bookingsdashboard-refetches-and-displays-the-new-outgoing-booking-immediately",
+      "featureTitle": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-45"
       ],
       "confidence": "high"
     }

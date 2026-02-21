@@ -1,13 +1,17 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the "labour not found" error on the booking creation page.
+**Goal:** Add unique labour IDs and mobile number fields to laborer profiles, display contact information throughout the app, and fix the issue where outgoing bookings don't appear after creation.
 
 **Planned changes:**
-- Debug and fix the laborer data fetching logic in CreateBookingPage.tsx
-- Verify laborId parameter is correctly extracted from URL and passed to backend
-- Add comprehensive error logging to track laborId value, query execution, and backend responses
-- Verify backend getLaborerById function properly retrieves laborer data for valid Principal IDs
-- Ensure appropriate error handling displays user-friendly messages for invalid or missing laborIds
+- Add unique labour ID field to Laborer type with automatic sequential generation (LAB-00001, LAB-00002, etc.)
+- Add mobile number field to Laborer type with basic validation
+- Display labour ID (read-only) on profile page
+- Add mobile number input field to profile form
+- Show mobile numbers on discovery page laborer cards
+- Display both provider and requester mobile numbers on booking detail page
+- Debug and fix outgoing bookings display issue in BookingsDashboard
+- Add comprehensive logging to outgoing bookings filtering and rendering flow
+- Verify createBooking mutation properly invalidates query cache for immediate display
 
-**User-visible outcome:** Users can successfully view laborer information when creating a booking, with no "labour not found" errors appearing for valid laborers.
+**User-visible outcome:** Each laborer has a unique labour ID and mobile number on their profile. Contact information is visible on discovery cards and booking details for easy communication. Newly created bookings appear immediately in the outgoing requests section without requiring manual refresh.

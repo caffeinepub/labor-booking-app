@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from '@tanstack/react-router';
-import { useGetBookingById, useUpdateBookingDetails, useGetUserProfile } from '../hooks/useQueries';
+import { useGetBookingById, useUpdateBookingDetails, useGetUserProfile, useGetLaborerById } from '../hooks/useQueries';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -8,22 +8,29 @@ import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
-import { Loader2, Calendar, MapPin, Clock, User, ArrowLeft, FileText, Save } from 'lucide-react';
+import { Loader2, Calendar, MapPin, Clock, User, FileText, Smartphone, Phone } from 'lucide-react';
 import { BookingStatus } from '../backend';
-import { toast } from 'sonner';
 
 export default function BookingDetailPage() {
   const { bookingId } = useParams({ from: '/bookings/$bookingId' });
-  const navigate = useNavigate();
   const { identity } = useInternetIdentity();
-  const { data: booking, isLoading } = useGetBookingById(BigInt(bookingId));
-  const { mutate: updateDetails, isPending: isUpdatingDetails } = useUpdateBookingDetails();
-  
-  const [isEditing, setIsEditing] = useState(false);
-  const [detailsText, setDetailsText] = useState('');
+  const navigate = useNavigate();
+  const { data: booking, isLoading: bookingLoading } = useGetBookingById(BigInt(bookingId));
+  const { mutate: updateDetails, isPending: isUpdating } = useUpdateBookingDetails();
 
+  const [detailsText, setDetailsText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Fetch user profiles for requester and target laborer
   const { data: requesterProfile } = useGetUserProfile(booking?.requester);
-  const { data: providerProfile } = useGetUserProfile(booking?.targetLaborer);
+  const { data: targetProfile } = useGetUserProfile(booking?.targetLaborer);
+
+  // Fetch full laborer data for mobile numbers
+  const { data: requesterLaborer } = useGetLaborerById(booking?.requester.toString());
+  const { data: targetLaborer } = useGetLaborerById(booking?.targetLaborer.toString());
+
+  const myPrincipal = identity?.getPrincipal().toString();
+  const isProvider = booking?.targetLaborer.toString() === myPrincipal;
 
   useEffect(() => {
     if (!identity) {
@@ -37,8 +44,18 @@ export default function BookingDetailPage() {
     }
   }, [booking]);
 
-  const myPrincipal = identity?.getPrincipal().toString();
-  const isProvider = booking?.targetLaborer.toString() === myPrincipal;
+  const handleSaveDetails = () => {
+    if (booking && detailsText.trim()) {
+      updateDetails(
+        { bookingId: booking.id, details: detailsText },
+        {
+          onSuccess: () => {
+            setIsEditing(false);
+          },
+        }
+      );
+    }
+  };
 
   const getStatusColor = (status: BookingStatus) => {
     switch (status) {
@@ -57,39 +74,10 @@ export default function BookingDetailPage() {
 
   const formatDate = (timestamp: bigint) => {
     const date = new Date(Number(timestamp) / 1000000);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return date.toLocaleString();
   };
 
-  const handleSaveDetails = () => {
-    if (!booking) return;
-    
-    if (!detailsText.trim()) {
-      toast.error('Details cannot be empty');
-      return;
-    }
-
-    updateDetails(
-      { bookingId: booking.id, details: detailsText },
-      {
-        onSuccess: () => {
-          toast.success('Booking details updated successfully');
-          setIsEditing(false);
-        },
-        onError: (error: any) => {
-          toast.error(error.message || 'Failed to update booking details');
-        },
-      }
-    );
-  };
-
-  if (isLoading) {
+  if (bookingLoading) {
     return (
       <div className="container py-12 flex justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
@@ -102,9 +90,8 @@ export default function BookingDetailPage() {
       <div className="container py-12">
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">Booking not found</p>
-            <Button onClick={() => navigate({ to: '/bookings' })}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <p className="text-muted-foreground">Booking not found</p>
+            <Button onClick={() => navigate({ to: '/bookings' })} className="mt-4">
               Back to Bookings
             </Button>
           </CardContent>
@@ -115,85 +102,109 @@ export default function BookingDetailPage() {
 
   return (
     <div className="container py-12 max-w-4xl">
-      <Button
-        variant="ghost"
-        onClick={() => navigate({ to: '/bookings' })}
-        className="mb-6"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Bookings
-      </Button>
+      <div className="mb-8">
+        <Button variant="ghost" onClick={() => navigate({ to: '/bookings' })} className="mb-4">
+          ← Back to Bookings
+        </Button>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Booking Details</h1>
+            <p className="text-muted-foreground">ID: {booking.id.toString()}</p>
+          </div>
+          <Badge className={getStatusColor(booking.status)}>{booking.status}</Badge>
+        </div>
+      </div>
 
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-2xl">{booking.serviceType}</CardTitle>
-                <CardDescription className="mt-2">
-                  Booking ID: {booking.id.toString()}
-                </CardDescription>
-              </div>
-              <Badge className={getStatusColor(booking.status)}>
-                {booking.status}
-              </Badge>
-            </div>
+            <CardTitle>Service Information</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-2">Requester</h3>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{requesterProfile?.name || 'Loading...'}</p>
-                      <p className="text-xs text-muted-foreground font-mono">
-                        {booking.requester.toString().slice(0, 20)}...
-                      </p>
-                    </div>
-                  </div>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-muted-foreground">Service Type</Label>
+                <p className="text-lg font-medium">{booking.serviceType}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Duration</Label>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <p className="text-lg font-medium">{booking.durationHours.toString()} hours</p>
                 </div>
+              </div>
+            </div>
 
-                <Separator />
+            <Separator />
 
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-2">Service Provider</h3>
+            <div>
+              <Label className="text-muted-foreground">Date & Time</Label>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <p className="text-lg font-medium">{formatDate(booking.dateTime)}</p>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-muted-foreground">Location</Label>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <p className="text-lg font-medium">{booking.location}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Contact Information</CardTitle>
+            <CardDescription>Mobile numbers for direct communication</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Requester</Label>
+                <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{providerProfile?.name || 'Loading...'}</p>
-                      <p className="text-xs text-muted-foreground font-mono">
-                        {booking.targetLaborer.toString().slice(0, 20)}...
-                      </p>
-                    </div>
+                    <p className="font-medium">{requesterProfile?.name || 'Loading...'}</p>
                   </div>
+                  {requesterLaborer?.mobileNumber && (
+                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                      <Smartphone className="w-4 h-4" />
+                      <p className="font-semibold">{requesterLaborer.mobileNumber}</p>
+                    </div>
+                  )}
+                  {requesterLaborer?.contact && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="w-3 h-3" />
+                      <p>{requesterLaborer.contact}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-amber-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground">Date & Time</p>
-                    <p className="font-medium">{formatDate(booking.dateTime)}</p>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Provider</Label>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <p className="font-medium">{targetProfile?.name || 'Loading...'}</p>
                   </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-amber-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground">Duration</p>
-                    <p className="font-medium">{booking.durationHours.toString()} hours</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-amber-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground">Location</p>
-                    <p className="font-medium">{booking.location}</p>
-                  </div>
+                  {targetLaborer?.mobileNumber && (
+                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                      <Smartphone className="w-4 h-4" />
+                      <p className="font-semibold">{targetLaborer.mobileNumber}</p>
+                    </div>
+                  )}
+                  {targetLaborer?.contact && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="w-3 h-3" />
+                      <p>{targetLaborer.contact}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -203,79 +214,54 @@ export default function BookingDetailPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-amber-600" />
-                <CardTitle>Booking Details & Notes</CardTitle>
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Booking Details & Notes
+                </CardTitle>
+                <CardDescription>
+                  {isProvider ? 'Add or update notes about this booking' : 'View booking details'}
+                </CardDescription>
               </div>
               {isProvider && !isEditing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Edit Details
+                <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                  Edit
                 </Button>
               )}
             </div>
-            <CardDescription>
-              {isProvider
-                ? 'Add or update special instructions, requirements, or notes for this booking'
-                : 'View booking details and special instructions'}
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            {isEditing ? (
+            {isEditing && isProvider ? (
               <div className="space-y-4">
-                <div>
-                  <Label htmlFor="details">Details</Label>
-                  <Textarea
-                    id="details"
-                    value={detailsText}
-                    onChange={(e) => setDetailsText(e.target.value)}
-                    placeholder="Enter booking details, special instructions, or requirements..."
-                    className="min-h-[150px] mt-2"
-                  />
-                </div>
+                <Textarea
+                  value={detailsText}
+                  onChange={(e) => setDetailsText(e.target.value)}
+                  placeholder="Add notes about the booking, special requirements, or updates..."
+                  rows={6}
+                  className="resize-none"
+                />
                 <div className="flex gap-2">
-                  <Button
-                    onClick={handleSaveDetails}
-                    disabled={isUpdatingDetails || !detailsText.trim()}
-                    className="bg-amber-600 hover:bg-amber-700"
-                  >
-                    {isUpdatingDetails ? (
+                  <Button onClick={handleSaveDetails} disabled={isUpdating}>
+                    {isUpdating ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Saving...
                       </>
                     ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Details
-                      </>
+                      'Save Details'
                     )}
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsEditing(false);
-                      setDetailsText(booking.details || '');
-                    }}
-                    disabled={isUpdatingDetails}
-                  >
+                  <Button variant="outline" onClick={() => setIsEditing(false)} disabled={isUpdating}>
                     Cancel
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="prose prose-sm max-w-none dark:prose-invert">
+              <div className="min-h-[100px] p-4 bg-muted/50 rounded-lg">
                 {booking.details ? (
                   <p className="whitespace-pre-wrap">{booking.details}</p>
                 ) : (
-                  <p className="text-muted-foreground italic">
-                    {isProvider
-                      ? 'No details added yet. Click "Edit Details" to add information.'
-                      : 'No details available for this booking.'}
-                  </p>
+                  <p className="text-muted-foreground italic">No details added yet</p>
                 )}
               </div>
             )}

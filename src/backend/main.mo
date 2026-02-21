@@ -3,11 +3,15 @@ import List "mo:core/List";
 import Iter "mo:core/Iter";
 import Text "mo:core/Text";
 import Time "mo:core/Time";
+import Nat "mo:core/Nat";
+import Char "mo:core/Char";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -50,22 +54,26 @@ actor {
 
   public type Laborer = {
     id : Principal;
+    laborId : Text;
     name : Text;
     skills : [Text];
     services : List.List<Service>;
     location : Text;
     contact : Text;
+    mobileNumber : Text;
     availability : Availability;
     bookings : List.List<Booking>;
   };
 
   public type LaborerData = {
     id : Principal;
+    laborId : Text;
     name : Text;
     skills : [Text];
     services : [Service];
     location : Text;
     contact : Text;
+    mobileNumber : Text;
     availability : Availability;
     bookings : [Booking];
   };
@@ -76,6 +84,7 @@ actor {
     services : [Service];
     location : Text;
     contact : Text;
+    mobileNumber : Text;
     availability : Availability;
   };
 
@@ -102,19 +111,40 @@ actor {
   let laborersStore = Map.empty<Principal, Laborer>();
   let userProfiles = Map.empty<Principal, UserProfile>();
   var nextBookingId = 0;
+  var nextLaborId = 1;
+
+  func generateLaborId() : Text {
+    let paddedNumber = nextLaborId.toText();
+    nextLaborId += 1;
+    "LAB-" # paddedNumber;
+  };
+
+  func validateMobileNumber(number : Text) : Bool {
+    if (number.size() != 10) { return false };
+    for (c in number.chars()) {
+      if (not c.isDigit()) { return false };
+    };
+    true;
+  };
 
   public shared ({ caller }) func saveCallerLaborer(laborerInput : LaborerInput) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
 
+    if (not validateMobileNumber(laborerInput.mobileNumber)) {
+      Runtime.trap("Invalid mobile number format. Must be 10 digits.");
+    };
+
     let laborer : Laborer = {
       id = caller;
+      laborId = generateLaborId();
       name = laborerInput.name;
       skills = laborerInput.skills;
       services = List.fromArray(laborerInput.services);
       location = laborerInput.location;
       contact = laborerInput.contact;
+      mobileNumber = laborerInput.mobileNumber;
       availability = laborerInput.availability;
       bookings = List.empty<Booking>();
     };
@@ -130,11 +160,13 @@ actor {
       case (?laborer) {
         ?{
           id = laborer.id;
+          laborId = laborer.laborId;
           name = laborer.name;
           skills = laborer.skills;
           services = laborer.services.toArray();
           location = laborer.location;
           contact = laborer.contact;
+          mobileNumber = laborer.mobileNumber;
           availability = laborer.availability;
           bookings = laborer.bookings.toArray();
         };
@@ -151,11 +183,13 @@ actor {
       case (?laborer) {
         ?{
           id = laborer.id;
+          laborId = laborer.laborId;
           name = laborer.name;
           skills = laborer.skills;
           services = laborer.services.toArray();
           location = laborer.location;
           contact = laborer.contact;
+          mobileNumber = laborer.mobileNumber;
           availability = laborer.availability;
           bookings = laborer.bookings.toArray();
         };
@@ -193,11 +227,13 @@ actor {
         if (Text.equal(laborer.location, neighborhood)) {
           ?{
             id = laborer.id;
+            laborId = laborer.laborId;
             name = laborer.name;
             skills = laborer.skills;
             services = laborer.services.toArray();
             location = laborer.location;
             contact = laborer.contact;
+            mobileNumber = laborer.mobileNumber;
             availability = laborer.availability;
             bookings = laborer.bookings.toArray();
           };
@@ -243,7 +279,6 @@ actor {
     let bookingId = nextBookingId;
     nextBookingId += 1;
 
-    // Simplify Booking creation: Use a more compact way to construct the record
     let booking : Booking = {
       id = bookingId;
       requester = caller;
@@ -262,11 +297,13 @@ actor {
     // Update laborer record using copy-on-write pattern
     let updatedLaborer = {
       id = targetLaborer.id;
+      laborId = targetLaborer.laborId;
       name = targetLaborer.name;
       skills = targetLaborer.skills;
       services = targetLaborer.services;
       location = targetLaborer.location;
       contact = targetLaborer.contact;
+      mobileNumber = targetLaborer.mobileNumber;
       availability = targetLaborer.availability;
       bookings = updatedBookings;
     };
@@ -284,11 +321,13 @@ actor {
       func(laborer) {
         {
           id = laborer.id;
+          laborId = laborer.laborId;
           name = laborer.name;
           skills = laborer.skills;
           services = laborer.services.toArray();
           location = laborer.location;
           contact = laborer.contact;
+          mobileNumber = laborer.mobileNumber;
           availability = laborer.availability;
           bookings = laborer.bookings.toArray();
         };
@@ -301,11 +340,10 @@ actor {
       Runtime.trap("Unauthorized: Only users can update bookings");
     };
 
-    // Find which laborer has this booking
     var foundLaborer : ?Laborer = null;
     var foundBooking : ?Booking = null;
 
-    for ((principal, laborer) in laborersStore.entries()) {
+    for ((_, laborer) in laborersStore.entries()) {
       let bookingOpt = laborer.bookings.find(func(b : Booking) : Bool { b.id == bookingId });
       switch (bookingOpt) {
         case (?booking) {
@@ -326,9 +364,8 @@ actor {
       case (?b) { b };
     };
 
-    // Authorization: Only the booking requester or the target laborer can update the booking
     if (caller != booking.requester and caller != booking.targetLaborer) {
-      Runtime.trap("Unauthorized: Only the booking requester or target laborer can update this booking");
+      Runtime.trap("Unauthorized: Only the requester or target laborer can update");
     };
 
     let updatedBookings = laborer.bookings.map<Booking, Booking>(
@@ -351,11 +388,13 @@ actor {
 
     let updatedLaborer = {
       id = laborer.id;
+      laborId = laborer.laborId;
       name = laborer.name;
       skills = laborer.skills;
       services = laborer.services;
       location = laborer.location;
       contact = laborer.contact;
+      mobileNumber = laborer.mobileNumber;
       availability = laborer.availability;
       bookings = updatedBookings;
     };
@@ -371,7 +410,7 @@ actor {
     var foundLaborer : ?Laborer = null;
     var foundBooking : ?Booking = null;
 
-    for ((principal, laborer) in laborersStore.entries()) {
+    for ((_, laborer) in laborersStore.entries()) {
       let bookingOpt = laborer.bookings.find(func(b : Booking) : Bool { b.id == bookingId });
       switch (bookingOpt) {
         case (?booking) {
@@ -393,7 +432,7 @@ actor {
     };
 
     if (caller != booking.targetLaborer) {
-      Runtime.trap("Unauthorized: Only the target laborer can update booking details");
+      Runtime.trap("Unauthorized: Only the target laborer can update details");
     };
 
     let updatedBookings = laborer.bookings.map<Booking, Booking>(
@@ -416,11 +455,13 @@ actor {
 
     let updatedLaborer = {
       id = laborer.id;
+      laborId = laborer.laborId;
       name = laborer.name;
       skills = laborer.skills;
       services = laborer.services;
       location = laborer.location;
       contact = laborer.contact;
+      mobileNumber = laborer.mobileNumber;
       availability = laborer.availability;
       bookings = updatedBookings;
     };

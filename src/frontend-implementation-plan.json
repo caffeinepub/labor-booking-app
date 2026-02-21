@@ -1,48 +1,120 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix 'labour not found' error on booking page",
+  "title": "Add unique labour IDs, mobile number fields, and fix outgoing bookings display",
   "requirements": [
     {
-      "id": "REQ-24",
-      "summary": "Debug and fix the 'labour not found' error on CreateBookingPage by investigating laborer data fetching logic, URL parameter parsing, and query execution",
+      "id": "REQ-39",
+      "summary": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
       "acceptanceCriteria": [
-        "The booking page successfully loads laborer information when accessed with a valid laborId",
-        "No 'labour not found' error is displayed when the laborId exists in the system",
-        "Appropriate error handling displays a user-friendly message if the laborId is genuinely invalid or missing",
-        "The laborId URL parameter is correctly extracted and passed to the backend query"
+        "Profile form displays mobile number input field",
+        "Users can enter and save their mobile number",
+        "Mobile number persists correctly when profile is saved"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/CreateBookingPage.tsx",
+          "path": "frontend/src/pages/ProfilePage.tsx",
           "operation": "modify",
-          "description": "Fix the laborId parameter extraction and parsing logic. Ensure the laborId URL parameter is correctly extracted using urlParams utilities, properly converted from string to Principal format, and passed to the getLaborerById query. Add null/undefined checks for the laborId before attempting to fetch laborer data. Verify that the query is properly enabled only when a valid laborId exists."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Review and fix the getLaborerById query hook implementation. Ensure the query properly handles Principal conversion, includes appropriate enabled conditions to prevent execution with invalid laborIds, and correctly processes the backend response including null returns. Add proper error handling for invalid Principal strings and backend query failures."
+          "description": "Add a mobile number input field to the laborer profile form. The field should be placed near the contact field. Include proper form state management using React Hook Form to bind the mobileNumber field to the form data. Ensure the mobile number value is included in the laborerInput object when calling saveLaborerMutation. The backend interface shows that LaborerInput.mobileNumber is a required string field, so validate that it is not empty before submission."
         }
       ]
     },
     {
-      "id": "REQ-25",
-      "summary": "Add comprehensive error logging to CreateBookingPage laborer data fetching flow to aid debugging",
+      "id": "REQ-40",
+      "summary": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
       "acceptanceCriteria": [
-        "Console logs show the laborId value being used in the query",
-        "Backend response data or error details are logged when the laborer query executes",
-        "Error states are clearly logged with descriptive messages indicating the failure point"
+        "Labour ID is displayed on the profile page",
+        "Labour ID field is read-only and cannot be edited by users",
+        "Labour ID is formatted clearly and prominently"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/CreateBookingPage.tsx",
+          "path": "frontend/src/pages/ProfilePage.tsx",
           "operation": "modify",
-          "description": "Add comprehensive console logging throughout the laborer data fetching flow. Log the raw laborId parameter value immediately after extraction from URL, log the parsed Principal object (or conversion errors), log when the query is enabled/disabled, log the query loading state, log the backend response data when received, and log any error objects with descriptive context. Include timestamp and component name in log messages for easier debugging."
-        },
+          "description": "Display the laborId field from the laborer data in a read-only format near the top of the profile form. According to the backend interface, LaborerData includes a laborId string field. Show this prominently with a label like 'Labour ID' and render it in a disabled input or display-only component. Style it to stand out from editable fields, using a different background or border to indicate it is system-generated and immutable."
+        }
+      ]
+    },
+    {
+      "id": "REQ-41",
+      "summary": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
+      "acceptanceCriteria": [
+        "Laborer cards on discovery page show mobile number",
+        "Mobile number is displayed in a clear, accessible format",
+        "Mobile number appears alongside other laborer information"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DiscoveryPage.tsx",
+          "operation": "modify",
+          "description": "Add the mobile number field to the laborer card display. According to the backend interface, LaborerData includes a mobileNumber string field. Display this below or near the existing contact information on each laborer card. Format it with an icon (e.g., phone icon) and label for clarity. Ensure the mobile number is easily readable and accessible for users browsing available laborers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-42",
+      "summary": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
+      "acceptanceCriteria": [
+        "Booking detail page shows the provider's mobile number",
+        "Booking detail page shows the requester's mobile number",
+        "Mobile numbers are clearly labeled and formatted for easy reference"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookingDetailPage.tsx",
+          "operation": "modify",
+          "description": "Display mobile numbers for both the requester and the target laborer (provider) on the booking detail page. The page currently fetches user profiles using getUserProfile queries. Extend these queries or add new ones to fetch the full LaborerData for both the requester and targetLaborer principals using getLaborerById. Extract the mobileNumber field from each LaborerData object and display them with clear labels like 'Requester Contact' and 'Provider Contact'. Format with phone icons and ensure both numbers are prominently visible for easy communication."
+        }
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "summary": "Debug and fix the outgoing bookings display issue in BookingsDashboard.tsx where outgoing bookings do not appear after successful booking creation, investigating the booking classification logic, principal matching, query refetching, and ensuring newly created bookings immediately appear in the outgoing requests section",
+      "acceptanceCriteria": [
+        "Newly created bookings appear immediately in outgoing requests section",
+        "Outgoing bookings classification logic correctly identifies user as requester",
+        "Query invalidation triggers proper refetch of booking data",
+        "All outgoing bookings display without missing or delayed entries"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "operation": "modify",
+          "description": "Fix the outgoing bookings classification logic to ensure newly created bookings appear immediately. Review the existing console.log statements that track booking filtering and principal matching. Verify that the identity.getPrincipal().toString() comparison correctly matches booking.requester.toString(). Check that the useGetCallerLaborer query provides accurate booking data and that the outgoingBookings array is populated correctly. Ensure the query invalidation from createBooking mutation triggers a proper refetch. Consider race conditions where the query may execute before the backend fully processes the new booking. Add additional logging if needed to trace the exact flow from mutation success to query refetch completion."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Add comprehensive logging to the BookingsDashboard.tsx outgoing bookings filtering and rendering flow to capture when bookings are fetched, how they are classified as outgoing, and any timing issues that prevent immediate display after creation",
+      "acceptanceCriteria": [
+        "Console logs capture the complete booking fetch and classification flow",
+        "Logs show the timing of query refetch after booking creation",
+        "Logs display the number of outgoing bookings found and their IDs",
+        "Error conditions or data inconsistencies are logged with context"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "operation": "modify",
+          "description": "Enhance existing console logging to provide comprehensive visibility into the booking filtering and classification process. Add logs that capture: (1) when the callerLaborer query completes and how many total bookings are returned, (2) the current user's principal for comparison, (3) each booking's requester and targetLaborer principals during filtering, (4) the final count of outgoing vs incoming bookings, (5) timing information showing when queries are triggered and completed, and (6) any error states or null/undefined values. Log before and after filtering operations to trace the exact data transformation. Include booking IDs in logs to track specific bookings through the flow."
+        }
+      ]
+    },
+    {
+      "id": "REQ-45",
+      "summary": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+      "acceptanceCriteria": [
+        "Query invalidation is triggered after createBooking success",
+        "Booking queries refetch immediately after invalidation",
+        "New booking appears in dashboard without requiring manual refresh",
+        "Cache invalidation includes all relevant booking query keys"
+      ],
+      "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add detailed logging in the getLaborerById query hook. Log when the query function is called with the laborId parameter, log Principal conversion attempts and results, log backend actor method calls, log successful responses and null returns with context, and log any caught errors with full error details. Ensure logs clearly indicate whether failures occur during parameter validation, Principal conversion, or backend query execution."
+          "description": "Review and verify the createBooking mutation's onSuccess callback to ensure it properly invalidates the callerLaborer query. The mutation should call queryClient.invalidateQueries with the correct query key (likely ['callerLaborer']) to trigger a refetch of the booking data. Ensure the invalidation happens after the mutation succeeds and before navigation. Consider adding a small delay or await on the invalidation if there are timing issues with backend consistency. Also verify that the query invalidation includes any other queries that depend on booking data, such as specific laborer queries if they cache booking information. Add console logging to confirm when invalidation is triggered and when the subsequent refetch completes."
         }
       ]
     }

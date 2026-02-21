@@ -10,6 +10,7 @@ export type Option<T> = Some<T> | None;
 export interface LaborerInput {
     contact: string;
     name: string;
+    mobileNumber: string;
     availability: Availability;
     skills: Array<string>;
     location: string;
@@ -74,9 +75,11 @@ export interface Booking {
 }
 export interface LaborerData {
     id: Principal;
+    laborId: string;
     contact: string;
     bookings: Array<Booking>;
     name: string;
+    mobileNumber: string;
     availability: Availability;
     skills: Array<string>;
     location: string;

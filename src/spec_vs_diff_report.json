@@ -1,16 +1,19 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T18:26:50.546Z",
-  "summary": "The diff implements all three requirements with comprehensive logging and error handling. REQ-24 is addressed through enhanced error handling in CreateBookingPage.tsx, REQ-25 is fully implemented with extensive console logging throughout the laborer data fetching flow, and REQ-26 is verified through the backend getLaborerById function implementation showing proper Principal-based lookups.",
+  "generatedAt": "2026-02-21T19:20:00.453Z",
+  "summary": "The implementation successfully addresses all requirements for adding unique labour IDs, mobile number fields, and fixing outgoing bookings display. Backend changes include labour ID generation, mobile number validation, and migration support. Frontend changes add mobile number inputs/displays across ProfilePage, DiscoveryPage, and BookingDetailPage, along with comprehensive logging in BookingsDashboard and query invalidation improvements in useQueries. All requirements appear to be fully implemented with appropriate validation and error handling.",
   "missing_requirements": [],
   "hallucinated_features": [],
   "confidence": 0.95,
   "changed_files": [
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/CreateBookingPage.tsx",
+    "frontend/src/pages/BookingDetailPage.tsx",
+    "frontend/src/pages/DiscoveryPage.tsx",
+    "frontend/src/pages/ProfilePage.tsx",
     "project_state.json"
   ]
 }

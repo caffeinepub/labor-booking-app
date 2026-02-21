@@ -62,9 +62,11 @@ export const Service = IDL.Record({
 });
 export const LaborerData = IDL.Record({
   'id' : IDL.Principal,
+  'laborId' : IDL.Text,
   'contact' : IDL.Text,
   'bookings' : IDL.Vec(Booking),
   'name' : IDL.Text,
+  'mobileNumber' : IDL.Text,
   'availability' : Availability,
   'skills' : IDL.Vec(IDL.Text),
   'location' : IDL.Text,
@@ -74,6 +76,7 @@ export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const LaborerInput = IDL.Record({
   'contact' : IDL.Text,
   'name' : IDL.Text,
+  'mobileNumber' : IDL.Text,
   'availability' : Availability,
   'skills' : IDL.Vec(IDL.Text),
   'location' : IDL.Text,
@@ -167,9 +170,11 @@ export const idlFactory = ({ IDL }) => {
   });
   const LaborerData = IDL.Record({
     'id' : IDL.Principal,
+    'laborId' : IDL.Text,
     'contact' : IDL.Text,
     'bookings' : IDL.Vec(Booking),
     'name' : IDL.Text,
+    'mobileNumber' : IDL.Text,
     'availability' : Availability,
     'skills' : IDL.Vec(IDL.Text),
     'location' : IDL.Text,
@@ -179,6 +184,7 @@ export const idlFactory = ({ IDL }) => {
   const LaborerInput = IDL.Record({
     'contact' : IDL.Text,
     'name' : IDL.Text,
+    'mobileNumber' : IDL.Text,
     'availability' : Availability,
     'skills' : IDL.Vec(IDL.Text),
     'location' : IDL.Text,

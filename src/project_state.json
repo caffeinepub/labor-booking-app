@@ -1,13 +1,15 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
+  "projectStateVersion": 21,
   "summary": "Labor booking app where laborers can book services from neighboring laborers",
   "architectural_notes": [
     "User type: Laborers (both service providers and consumers)",
-    "Core functionality: Peer-to-peer labor booking marketplace"
+    "Core functionality: Peer-to-peer labor booking marketplace",
+    "Each laborer should have a unique labour ID for identification"
   ],
   "known_issues": [
-    "Booking page displays 'labour not found' error"
+    "Booking service not working after Version 7 deployment",
+    "Outgoing bookings not appearing in booking section after successful booking creation"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -170,6 +172,118 @@
         "REQ-25"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-outgoing-booking-history-display-in-bookingsdashboard-tsx-that-is-not-functioning-correctly-while-incoming-history-works-perfectly-investigate-the-data-fetching-logic-for-outgoing-bookings-verify-the-filtering-logic-correctly-identifies-bookings-where-the-current-user-is-the-requester-and-ensure-completed-and-cancelled-outgoing-bookings-are-properly-displayed-in-the-bookinghistorysection-component",
+      "title": "Debug and fix the outgoing booking history display in BookingsDashboard.tsx that is not functioning correctly while incoming history works perfectly. Investigate the data fetching logic for outgoing bookings, verify the filtering logic correctly identifies bookings where the current user is the requester, and ensure completed and cancelled outgoing bookings are properly displayed in the BookingHistorySection component.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-to-the-outgoing-booking-history-data-flow-in-bookingsdashboard-tsx-to-capture-the-current-user-s-principal-the-filtering-logic-for-outgoing-bookings-the-number-of-bookings-retrieved-and-any-data-inconsistencies-that-prevent-outgoing-history-from-displaying-correctly",
+      "title": "Add comprehensive error logging to the outgoing booking history data flow in BookingsDashboard.tsx to capture the current user's principal, the filtering logic for outgoing bookings, the number of bookings retrieved, and any data inconsistencies that prevent outgoing history from displaying correctly.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-debug-the-complete-booking-creation-flow-from-createbookingpage-tsx-through-usequeries-ts-to-backend-main-mo-createbooking-function-to-identify-why-the-booking-service-stopped-working-after-version-7-deployment-examining-state-persistence-actor-initialization-query-invalidation-and-mutation-handling",
+      "title": "Investigate and debug the complete booking creation flow from CreateBookingPage.tsx through useQueries.ts to backend/main.mo createBooking function to identify why the booking service stopped working after Version 7 deployment, examining state persistence, actor initialization, query invalidation, and mutation handling",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-to-the-createbooking-mutation-in-usequeries-ts-to-capture-the-full-request-payload-backend-actor-state-authentication-status-and-detailed-error-responses-including-any-network-failures-or-actor-initialization-issues",
+      "title": "Add comprehensive error logging to the createBooking mutation in useQueries.ts to capture the full request payload, backend actor state, authentication status, and detailed error responses including any network failures or actor initialization issues",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-timeout-protection-to-the-createbooking-mutation-in-createbookingpage-tsx-that-triggers-after-15-seconds-logs-the-timeout-event-with-full-context-and-displays-a-user-friendly-error-message-instructing-users-to-retry-their-booking-request",
+      "title": "Add timeout protection to the createBooking mutation in CreateBookingPage.tsx that triggers after 15 seconds, logs the timeout event with full context, and displays a user-friendly error message instructing users to retry their booking request",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-test-the-complete-booking-creation-flow-end-to-end-including-form-submission-backend-processing-success-navigation-and-verify-that-bookings-appear-correctly-in-the-bookingsdashboard-outgoing-requests-section-immediately-after-creation",
+      "title": "Test the complete booking creation flow end-to-end including form submission, backend processing, success navigation, and verify that bookings appear correctly in the BookingsDashboard outgoing requests section immediately after creation",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-user-feedback-in-createbookingpage-tsx-showing-booking-creation-progress-with-loading-states-submission-confirmation-and-clear-error-messages-if-the-booking-fails-ensuring-users-understand-the-current-state-of-their-request-at-all-times",
+      "title": "Add real-time user feedback in CreateBookingPage.tsx showing booking creation progress with loading states, submission confirmation, and clear error messages if the booking fails, ensuring users understand the current state of their request at all times",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-button-element-at-xpath-html-1-body-1-div-1-div-1-main-1-div-1-div-3-div-1-button-2-that-is-not-functioning-correctly-investigate-the-button-s-click-handler-event-listeners-disabled-state-form-submission-logic-and-any-associated-state-management-to-identify-and-resolve-why-the-button-does-not-perform-its-intended-action-when-clicked",
+      "title": "Debug and fix the button element at XPath /html[1]/body[1]/div[1]/div[1]/main[1]/div[1]/div[3]/div[1]/button[2] that is not functioning correctly. Investigate the button's click handler, event listeners, disabled state, form submission logic, and any associated state management to identify and resolve why the button does not perform its intended action when clicked.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-to-the-button-element-at-xpath-html-1-body-1-div-1-div-1-main-1-div-1-div-3-div-1-button-2-to-capture-click-events-event-handler-execution-any-validation-failures-state-changes-triggered-by-the-button-and-error-conditions-that-prevent-the-button-from-functioning-properly",
+      "title": "Add comprehensive error logging to the button element at XPath /html[1]/body[1]/div[1]/div[1]/main[1]/div[1]/div[3]/div[1]/button[2] to capture click events, event handler execution, any validation failures, state changes triggered by the button, and error conditions that prevent the button from functioning properly.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-profilepage-tsx-laborer-profile-form-to-include-a-mobile-number-input-field-that-allows-users-to-enter-and-edit-their-contact-phone-number",
+      "title": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-labour-id-prominently-on-the-profilepage-tsx-for-each-laborer-showing-it-as-a-read-only-identifier-field-that-helps-users-reference-their-unique-id",
+      "title": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-mobile-number-display-to-the-discoverypage-tsx-laborer-cards-so-users-can-see-contact-information-when-browsing-available-laborers",
+      "title": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-both-the-provider-s-and-requester-s-mobile-numbers-in-the-bookingdetailpage-tsx-to-facilitate-direct-communication-between-the-two-parties-involved-in-the-booking",
+      "title": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-createbooking-mutation-in-usequeries-ts-properly-invalidates-the-booking-queries-cache-after-successful-creation-ensuring-the-bookingsdashboard-refetches-and-displays-the-new-outgoing-booking-immediately",
+      "title": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -230,6 +344,70 @@
       "summary": "Verify the backend getLaborerById function in main.mo correctly retrieves laborer data and returns null only when the laborer genuinely does not exist, ensuring proper handling of Principal-based lookups and state access",
       "reqIds": [
         "REQ-26"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Fix outgoing booking history display - not working while incoming history works correctly",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Fix booking service - not working after deployment",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Verify the backend createBooking function in main.mo correctly handles booking creation requests, validates all required fields (laborerId, serviceType, scheduledDate, duration, location), properly stores booking data in state, and returns success responses with the created booking ID",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Generate and assign a unique labour ID for each laborer in the system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add mobile number field to laborer profiles and booking communication section",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add a unique labour ID field to the Laborer type in backend/main.mo that is automatically generated and assigned when a new laborer profile is created, ensuring each laborer has a unique, human-readable identifier (e.g., 'LAB-00001', 'LAB-00002') that can be used for reference and communication",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Add a mobile number field to the Laborer type in backend/main.mo to store contact information for each laborer, including validation for proper phone number format",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Debug and fix the outgoing bookings display issue in BookingsDashboard.tsx where outgoing bookings do not appear after successful booking creation, investigating the booking classification logic, principal matching, query refetching, and ensuring newly created bookings immediately appear in the outgoing requests section",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Add comprehensive logging to the BookingsDashboard.tsx outgoing bookings filtering and rendering flow to capture when bookings are fetched, how they are classified as outgoing, and any timing issues that prevent immediate display after creation",
+      "reqIds": [
+        "REQ-44"
       ],
       "status": "pending"
     }

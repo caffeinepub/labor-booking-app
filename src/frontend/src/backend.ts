@@ -92,6 +92,7 @@ export class ExternalBlob {
 export interface LaborerInput {
     contact: string;
     name: string;
+    mobileNumber: string;
     availability: Availability;
     skills: Array<string>;
     location: string;
@@ -156,9 +157,11 @@ export interface Booking {
 }
 export interface LaborerData {
     id: Principal;
+    laborId: string;
     contact: string;
     bookings: Array<Booking>;
     name: string;
+    mobileNumber: string;
     availability: Availability;
     skills: Array<string>;
     location: string;
@@ -508,18 +511,22 @@ function from_candid_record_n17(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }
 function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     id: Principal;
+    laborId: string;
     contact: string;
     bookings: Array<_Booking>;
     name: string;
+    mobileNumber: string;
     availability: _Availability;
     skills: Array<string>;
     location: string;
     services: Array<_Service>;
 }): {
     id: Principal;
+    laborId: string;
     contact: string;
     bookings: Array<Booking>;
     name: string;
+    mobileNumber: string;
     availability: Availability;
     skills: Array<string>;
     location: string;
@@ -527,9 +534,11 @@ function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint
 } {
     return {
         id: value.id,
+        laborId: value.laborId,
         contact: value.contact,
         bookings: from_candid_vec_n10(_uploadFile, _downloadFile, value.bookings),
         name: value.name,
+        mobileNumber: value.mobileNumber,
         availability: from_candid_Availability_n16(_uploadFile, _downloadFile, value.availability),
         skills: value.skills,
         location: value.location,
@@ -658,6 +667,7 @@ function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint
 function to_candid_record_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     contact: string;
     name: string;
+    mobileNumber: string;
     availability: Availability;
     skills: Array<string>;
     location: string;
@@ -665,6 +675,7 @@ function to_candid_record_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8
 }): {
     contact: string;
     name: string;
+    mobileNumber: string;
     availability: _Availability;
     skills: Array<string>;
     location: string;
@@ -673,6 +684,7 @@ function to_candid_record_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     return {
         contact: value.contact,
         name: value.name,
+        mobileNumber: value.mobileNumber,
         availability: to_candid_Availability_n25(_uploadFile, _downloadFile, value.availability),
         skills: value.skills,
         location: value.location,

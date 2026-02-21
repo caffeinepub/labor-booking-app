@@ -1,67 +1,187 @@
 {
   "kind": "build_request",
-  "title": "Fix 'labour not found' error on booking page",
-  "projectName": "LaborConnect",
+  "title": "Add unique labour IDs, mobile number fields, and fix outgoing bookings display",
+  "projectName": "Labour Connect",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-24",
-      "text": "Debug and fix the 'labour not found' error displayed on the booking creation page (CreateBookingPage.tsx) by investigating the laborer data fetching logic, verifying the laborId parameter is correctly passed and parsed, and ensuring the backend getLaborerById function returns the correct laborer data",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "now it is showing labour not found"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The booking page successfully loads laborer information when accessed with a valid laborId",
-        "No 'labour not found' error is displayed when the laborId exists in the system",
-        "Appropriate error handling displays a user-friendly message if the laborId is genuinely invalid or missing",
-        "The laborId URL parameter is correctly extracted and passed to the backend query"
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "text": "Add comprehensive error logging to the CreateBookingPage.tsx laborer data fetching flow to capture the laborId parameter value, query execution status, backend response, and any error details to aid in debugging the 'labour not found' issue",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Console logs show the laborId value being used in the query",
-        "Backend response data or error details are logged when the laborer query executes",
-        "Error states are clearly logged with descriptive messages indicating the failure point"
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "Verify the backend getLaborerById function in main.mo correctly retrieves laborer data and returns null only when the laborer genuinely does not exist, ensuring proper handling of Principal-based lookups and state access",
+      "id": "REQ-37",
+      "text": "Add a unique labour ID field to the Laborer type in backend/main.mo that is automatically generated and assigned when a new laborer profile is created, ensuring each laborer has a unique, human-readable identifier (e.g., 'LAB-00001', 'LAB-00002') that can be used for reference and communication",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-latest"
+        ],
+        "quotes": [
+          "MAKE A UNIQUE LABOUR ID FOR EVERYONE"
         ]
       },
       "acceptanceCriteria": [
-        "The getLaborerById function successfully returns laborer data for valid Principal IDs",
-        "The function returns null only when the laborer does not exist in the laborers HashMap",
-        "No runtime errors occur during laborer lookup operations"
+        "Laborer type includes a unique labour ID field",
+        "Labour IDs are automatically generated in sequential format",
+        "Each laborer receives a unique ID that never duplicates",
+        "Existing laborers are migrated to have labour IDs assigned"
+      ]
+    },
+    {
+      "id": "REQ-38",
+      "text": "Add a mobile number field to the Laborer type in backend/main.mo to store contact information for each laborer, including validation for proper phone number format",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "USE MOBILE NUMBER FOR COMMUNICATION IN BOOKING SECTION"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Laborer type includes a mobile number field",
+        "Mobile number field accepts and stores phone numbers",
+        "Basic validation ensures mobile number format is reasonable"
+      ]
+    },
+    {
+      "id": "REQ-39",
+      "text": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "USE MOBILE NUMBER FOR COMMUNICATION IN BOOKING SECTION"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Profile form displays mobile number input field",
+        "Users can enter and save their mobile number",
+        "Mobile number persists correctly when profile is saved"
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "text": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "MAKE A UNIQUE LABOUR ID FOR EVERYONE"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Labour ID is displayed on the profile page",
+        "Labour ID field is read-only and cannot be edited by users",
+        "Labour ID is formatted clearly and prominently"
+      ]
+    },
+    {
+      "id": "REQ-41",
+      "text": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "USE MOBILE NUMBER FOR COMMUNICATION IN BOOKING SECTION"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Laborer cards on discovery page show mobile number",
+        "Mobile number is displayed in a clear, accessible format",
+        "Mobile number appears alongside other laborer information"
+      ]
+    },
+    {
+      "id": "REQ-42",
+      "text": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "USE MOBILE NUMBER FOR COMMUNICATION IN BOOKING SECTION"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Booking detail page shows the provider's mobile number",
+        "Booking detail page shows the requester's mobile number",
+        "Mobile numbers are clearly labeled and formatted for easy reference"
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "text": "Debug and fix the outgoing bookings display issue in BookingsDashboard.tsx where outgoing bookings do not appear after successful booking creation, investigating the booking classification logic, principal matching, query refetching, and ensuring newly created bookings immediately appear in the outgoing requests section",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "OUTGOING SERVICE IN BOOKING SECTION IS NOT GENERATING AFTER SUCCESSFUL BOOKING"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Newly created bookings appear immediately in outgoing requests section",
+        "Outgoing bookings classification logic correctly identifies user as requester",
+        "Query invalidation triggers proper refetch of booking data",
+        "All outgoing bookings display without missing or delayed entries"
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "Add comprehensive logging to the BookingsDashboard.tsx outgoing bookings filtering and rendering flow to capture when bookings are fetched, how they are classified as outgoing, and any timing issues that prevent immediate display after creation",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "OUTGOING SERVICE IN BOOKING SECTION IS NOT GENERATING AFTER SUCCESSFUL BOOKING"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Console logs capture the complete booking fetch and classification flow",
+        "Logs show the timing of query refetch after booking creation",
+        "Logs display the number of outgoing bookings found and their IDs",
+        "Error conditions or data inconsistencies are logged with context"
+      ]
+    },
+    {
+      "id": "REQ-45",
+      "text": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "OUTGOING SERVICE IN BOOKING SECTION IS NOT GENERATING AFTER SUCCESSFUL BOOKING"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Query invalidation is triggered after createBooking success",
+        "Booking queries refetch immediately after invalidation",
+        "New booking appears in dashboard without requiring manual refresh",
+        "Cache invalidation includes all relevant booking query keys"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor backend architecture in main.mo",
-    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, frontend/src/components/ui"
+    "Respect single-actor architecture - all backend logic must remain in backend/main.mo",
+    "Do not modify Internet Identity authentication implementation",
+    "Do not edit read-only paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Maintain existing Tailwind CSS warm color palette without introducing blue or purple"
   ],
   "nonGoals": [
-    "Redesigning the booking page UI or layout",
-    "Adding new laborer profile fields",
-    "Implementing new booking features beyond fixing the error"
+    "Implementing SMS or phone call functionality for mobile numbers",
+    "Adding mobile number verification or OTP authentication",
+    "Creating a separate communication system beyond displaying contact information",
+    "Redesigning the existing booking dashboard layout or navigation structure"
   ],
   "imageRequirements": {
     "required": [],

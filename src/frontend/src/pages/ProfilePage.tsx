@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Loader2, IdCard } from 'lucide-react';
 import type { LaborerInput, Service, Availability } from '../backend';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -22,6 +23,7 @@ export default function ProfilePage() {
     services: [],
     location: '',
     contact: '',
+    mobileNumber: '',
     availability: {
       status: { __kind__: 'available', available: null },
       lastUpdated: BigInt(Date.now() * 1000000),
@@ -45,6 +47,7 @@ export default function ProfilePage() {
         services: laborer.services,
         location: laborer.location,
         contact: laborer.contact,
+        mobileNumber: laborer.mobileNumber,
         availability: laborer.availability,
       });
     }
@@ -52,6 +55,18 @@ export default function ProfilePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate mobile number
+    if (!formData.mobileNumber || formData.mobileNumber.trim().length === 0) {
+      alert('Mobile number is required');
+      return;
+    }
+    
+    if (!/^\d{10}$/.test(formData.mobileNumber.trim())) {
+      alert('Mobile number must be exactly 10 digits');
+      return;
+    }
+    
     saveLaborer(formData);
   };
 
@@ -127,6 +142,30 @@ export default function ProfilePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {laborer && laborer.laborId && (
+          <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-amber-900 dark:text-amber-100">
+                <IdCard className="w-5 h-5" />
+                Labour ID
+              </CardTitle>
+              <CardDescription>Your unique identification number</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3">
+                <Input
+                  value={laborer.laborId}
+                  disabled
+                  className="font-mono text-lg font-semibold bg-white dark:bg-gray-950 border-amber-300 dark:border-amber-700"
+                />
+                <Badge variant="outline" className="text-xs whitespace-nowrap">
+                  Read-only
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
@@ -141,6 +180,22 @@ export default function ProfilePage() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mobileNumber">Mobile Number</Label>
+              <Input
+                id="mobileNumber"
+                type="tel"
+                value={formData.mobileNumber}
+                onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
+                placeholder="10-digit mobile number"
+                pattern="\d{10}"
+                maxLength={10}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter a 10-digit mobile number for booking communications
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="contact">Contact (Phone/Email)</Label>

@@ -26,152 +26,200 @@ export default function CreateBookingPage() {
   });
 
   useEffect(() => {
-    console.log('[CreateBookingPage] Component mounted');
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('[CreateBookingPage] 🎬 COMPONENT MOUNTED');
+    console.log('[CreateBookingPage] Timestamp:', new Date().toISOString());
     console.log('[CreateBookingPage] Laborer ID from params:', laborerId);
     console.log('[CreateBookingPage] Identity present:', !!identity);
+    console.log('[CreateBookingPage] Identity principal:', identity?.getPrincipal().toString() || 'N/A');
+    console.log('═══════════════════════════════════════════════════════════');
     
     if (!identity) {
-      console.warn('[CreateBookingPage] No identity found, redirecting to home');
+      console.warn('[CreateBookingPage] ⚠️ No identity found, redirecting to home');
       navigate({ to: '/' });
     }
   }, [identity, navigate, laborerId]);
 
   useEffect(() => {
-    console.log('[CreateBookingPage] Laborer query state changed');
-    console.log('[CreateBookingPage] Loading:', laborerLoading);
-    console.log('[CreateBookingPage] Error:', laborerError);
-    console.log('[CreateBookingPage] Laborer data:', laborer ? 'Found' : 'Not found');
+    console.log('[CreateBookingPage] 📊 LABORER QUERY STATE CHANGED');
+    console.log('[CreateBookingPage]   - Loading:', laborerLoading);
+    console.log('[CreateBookingPage]   - Error:', laborerError);
+    console.log('[CreateBookingPage]   - Data present:', !!laborer);
     
     if (laborer) {
-      console.log('[CreateBookingPage] Laborer details:', {
-        id: laborer.id.toString(),
-        name: laborer.name,
-        location: laborer.location,
-        skills: laborer.skills,
-      });
+      console.log('[CreateBookingPage] 👤 LABORER DETAILS:');
+      console.log('[CreateBookingPage]   - ID:', laborer.id.toString());
+      console.log('[CreateBookingPage]   - Name:', laborer.name);
+      console.log('[CreateBookingPage]   - Location:', laborer.location);
+      console.log('[CreateBookingPage]   - Skills:', laborer.skills.join(', '));
+      console.log('[CreateBookingPage]   - Services count:', laborer.services.length);
     }
     
     if (laborerError) {
-      console.error('[CreateBookingPage] Laborer query error:', laborerQueryError);
+      console.error('[CreateBookingPage] ❌ LABORER QUERY ERROR:', laborerQueryError);
     }
   }, [laborer, laborerLoading, laborerError, laborerQueryError]);
 
   useEffect(() => {
     if (laborerError) {
-      console.error('[CreateBookingPage] Error loading laborer:', laborerQueryError);
+      console.error('[CreateBookingPage] 🚨 Error loading laborer:', laborerQueryError);
       toast.error('Failed to load laborer information. Please try again.');
     }
   }, [laborerError, laborerQueryError]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[CreateBookingPage] Form submission started at:', new Date().toISOString());
-    console.log('[CreateBookingPage] Form data:', formData);
+    
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('[CreateBookingPage] 📝 FORM SUBMISSION STARTED');
+    console.log('[CreateBookingPage] Timestamp:', new Date().toISOString());
+    console.log('═══════════════════════════════════════════════════════════');
+    
+    console.log('[CreateBookingPage] 📋 RAW FORM DATA:');
+    console.log('[CreateBookingPage]   - Service Type:', formData.serviceType);
+    console.log('[CreateBookingPage]   - Date/Time:', formData.dateTime);
+    console.log('[CreateBookingPage]   - Duration Hours:', formData.durationHours);
+    console.log('[CreateBookingPage]   - Location:', formData.location);
+    console.log('[CreateBookingPage]   - Target Laborer ID:', laborerId);
     
     reset(); // Clear any previous errors
 
     // Validate form data
+    console.log('[CreateBookingPage] 🔍 VALIDATING FORM DATA...');
+    
     if (!formData.serviceType.trim()) {
-      console.warn('[CreateBookingPage] Validation failed: Service type is empty');
+      console.warn('[CreateBookingPage] ⚠️ Validation failed: Service type is empty');
       toast.error('Please enter a service type');
       return;
     }
 
     if (!formData.dateTime) {
-      console.warn('[CreateBookingPage] Validation failed: Date/time is empty');
+      console.warn('[CreateBookingPage] ⚠️ Validation failed: Date/time is empty');
       toast.error('Please select a date and time');
       return;
     }
 
     if (!formData.durationHours || parseInt(formData.durationHours) < 1) {
-      console.warn('[CreateBookingPage] Validation failed: Invalid duration');
+      console.warn('[CreateBookingPage] ⚠️ Validation failed: Invalid duration');
       toast.error('Please enter a valid duration (at least 1 hour)');
       return;
     }
 
     if (!formData.location.trim()) {
-      console.warn('[CreateBookingPage] Validation failed: Location is empty');
+      console.warn('[CreateBookingPage] ⚠️ Validation failed: Location is empty');
       toast.error('Please enter a location');
       return;
     }
 
-    console.log('[CreateBookingPage] Validation passed, preparing booking input...');
+    console.log('[CreateBookingPage] ✅ Validation passed');
+    console.log('[CreateBookingPage] 🔧 Preparing BookingInput object...');
 
     try {
+      const targetLaborerPrincipal = Principal.fromText(laborerId);
+      const dateTimeTimestamp = BigInt(new Date(formData.dateTime).getTime() * 1000000);
+      const durationHoursBigInt = BigInt(formData.durationHours);
+      
       const bookingInput: BookingInput = {
-        targetLaborer: Principal.fromText(laborerId),
+        targetLaborer: targetLaborerPrincipal,
         serviceType: formData.serviceType,
-        dateTime: BigInt(new Date(formData.dateTime).getTime() * 1000000),
-        durationHours: BigInt(formData.durationHours),
+        dateTime: dateTimeTimestamp,
+        durationHours: durationHoursBigInt,
         location: formData.location,
       };
 
-      console.log('[CreateBookingPage] Booking input prepared:', {
-        targetLaborer: laborerId,
-        serviceType: bookingInput.serviceType,
-        dateTime: bookingInput.dateTime.toString(),
-        durationHours: bookingInput.durationHours.toString(),
-        location: bookingInput.location,
-      });
+      console.log('[CreateBookingPage] 📦 BOOKING INPUT PREPARED:');
+      console.log('[CreateBookingPage]   - Target Laborer:', laborerId);
+      console.log('[CreateBookingPage]   - Target Laborer (Principal):', targetLaborerPrincipal.toString());
+      console.log('[CreateBookingPage]   - Service Type:', bookingInput.serviceType);
+      console.log('[CreateBookingPage]   - Date/Time (BigInt):', bookingInput.dateTime.toString());
+      console.log('[CreateBookingPage]   - Date/Time (ISO):', new Date(formData.dateTime).toISOString());
+      console.log('[CreateBookingPage]   - Duration Hours:', bookingInput.durationHours.toString());
+      console.log('[CreateBookingPage]   - Location:', bookingInput.location);
+      console.log('[CreateBookingPage]   - Details:', bookingInput.details || '(none)');
 
-      console.log('[CreateBookingPage] Invoking createBooking mutation...');
+      console.log('[CreateBookingPage] 🚀 Invoking createBooking mutation...');
 
       createBooking(bookingInput, {
         onSuccess: (bookingId) => {
-          console.log('[CreateBookingPage] Mutation onSuccess callback triggered');
-          console.log('[CreateBookingPage] Booking ID received:', bookingId.toString());
-          console.log('[CreateBookingPage] Showing success toast...');
+          console.log('═══════════════════════════════════════════════════════════');
+          console.log('[CreateBookingPage] 🎉 MUTATION SUCCESS CALLBACK');
+          console.log('[CreateBookingPage] Booking ID:', bookingId.toString());
+          console.log('[CreateBookingPage] Timestamp:', new Date().toISOString());
+          console.log('═══════════════════════════════════════════════════════════');
+          
+          console.log('[CreateBookingPage] 📢 Showing success toast...');
           toast.success('Booking request submitted successfully!');
-          console.log('[CreateBookingPage] Navigating to success page...');
+          
+          console.log('[CreateBookingPage] 🧭 Navigating to success page...');
           navigate({ to: '/booking-success' });
-          console.log('[CreateBookingPage] Navigation initiated at:', new Date().toISOString());
+          
+          console.log('[CreateBookingPage] ✅ Navigation initiated');
         },
         onError: (err) => {
-          console.error('[CreateBookingPage] Mutation onError callback triggered');
+          console.error('═══════════════════════════════════════════════════════════');
+          console.error('[CreateBookingPage] 🔴 MUTATION ERROR CALLBACK');
+          console.error('[CreateBookingPage] Timestamp:', new Date().toISOString());
           console.error('[CreateBookingPage] Error object:', err);
           console.error('[CreateBookingPage] Error type:', typeof err);
           console.error('[CreateBookingPage] Error constructor:', err?.constructor?.name);
+          console.error('═══════════════════════════════════════════════════════════');
           
           let errorMessage = 'Failed to create booking. Please try again.';
           
           if (err instanceof Error) {
-            console.error('[CreateBookingPage] Error message:', err.message);
-            console.error('[CreateBookingPage] Error stack:', err.stack);
+            console.error('[CreateBookingPage] 📝 Error details:');
+            console.error('[CreateBookingPage]   - Message:', err.message);
+            console.error('[CreateBookingPage]   - Name:', err.name);
+            console.error('[CreateBookingPage]   - Stack:', err.stack);
+            
             errorMessage = err.message;
             
-            // Check if it's a timeout error
+            // Check for specific error types
             if (err.message.includes('timed out')) {
-              console.error('[CreateBookingPage] Timeout error detected');
-              errorMessage = 'The request timed out. The server may be busy. Please try again in a moment.';
+              console.error('[CreateBookingPage] 🔍 Timeout error detected');
+              errorMessage = 'The request timed out after 15 seconds. The server may be busy. Please try again in a moment.';
+            } else if (err.message.includes('not found')) {
+              console.error('[CreateBookingPage] 🔍 Not found error detected');
+            } else if (err.message.includes('not authorized')) {
+              console.error('[CreateBookingPage] 🔍 Authorization error detected');
+            } else if (err.message.includes('Invalid')) {
+              console.error('[CreateBookingPage] 🔍 Validation error detected');
             }
           }
           
-          console.log('[CreateBookingPage] Showing error toast with message:', errorMessage);
+          console.log('[CreateBookingPage] 📢 Showing error toast with message:', errorMessage);
           toast.error(errorMessage);
-          console.log('[CreateBookingPage] Error handling completed at:', new Date().toISOString());
+          console.log('[CreateBookingPage] ❌ Error handling completed');
         },
       });
 
-      console.log('[CreateBookingPage] createBooking mutation invoked, waiting for response...');
+      console.log('[CreateBookingPage] ⏳ Mutation invoked, waiting for response...');
     } catch (err) {
-      console.error('[CreateBookingPage] Exception during booking submission:', err);
+      console.error('═══════════════════════════════════════════════════════════');
+      console.error('[CreateBookingPage] 💥 EXCEPTION DURING BOOKING SUBMISSION');
+      console.error('[CreateBookingPage] Exception:', err);
+      if (err instanceof Error) {
+        console.error('[CreateBookingPage] Exception message:', err.message);
+        console.error('[CreateBookingPage] Exception stack:', err.stack);
+      }
+      console.error('═══════════════════════════════════════════════════════════');
       toast.error('An unexpected error occurred. Please try again.');
     }
   };
 
   const handleCancel = () => {
-    console.log('[CreateBookingPage] Cancel button clicked');
+    console.log('[CreateBookingPage] 🔙 Cancel button clicked');
     try {
       navigate({ to: '/discover' });
-      console.log('[CreateBookingPage] Navigation to discover page initiated');
+      console.log('[CreateBookingPage] ✅ Navigation to discover page initiated');
     } catch (err) {
-      console.error('[CreateBookingPage] Error navigating to discover page:', err);
+      console.error('[CreateBookingPage] ❌ Error navigating to discover page:', err);
       toast.error('Navigation failed. Please try again.');
     }
   };
 
   if (laborerLoading) {
-    console.log('[CreateBookingPage] Loading laborer...');
+    console.log('[CreateBookingPage] ⏳ Loading laborer data...');
     return (
       <div className="container py-12 flex justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
@@ -180,7 +228,7 @@ export default function CreateBookingPage() {
   }
 
   if (!laborer) {
-    console.error('[CreateBookingPage] Laborer not found for ID:', laborerId);
+    console.error('[CreateBookingPage] ❌ Laborer not found for ID:', laborerId);
     return (
       <div className="container py-12 max-w-2xl">
         <Card>
@@ -204,7 +252,7 @@ export default function CreateBookingPage() {
     );
   }
 
-  console.log('[CreateBookingPage] Rendering booking form for:', laborer.name);
+  console.log('[CreateBookingPage] 🎨 Rendering booking form for:', laborer.name);
 
   return (
     <div className="container py-12 max-w-2xl">
@@ -306,7 +354,7 @@ export default function CreateBookingPage() {
             {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Submitting...
+                Creating booking...
               </>
             ) : (
               'Submit Booking'

@@ -1,52 +1,107 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T18:26:50.549Z",
+  "generatedAt": "2026-02-21T19:20:00.457Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 9,
+    "implemented": 5,
     "items": [
       {
-        "id": "REQ-24",
-        "summary": "Debug and fix the 'labour not found' error displayed on the booking creation page (CreateBookingPage.tsx) by investigating the laborer data fetching logic, verifying the laborId parameter is correctly passed and parsed, and ensuring the backend getLaborerById function returns the correct laborer data",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/CreateBookingPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/CreateBookingPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-25",
-        "summary": "Add comprehensive error logging to the CreateBookingPage.tsx laborer data fetching flow to capture the laborId parameter value, query execution status, backend response, and any error details to aid in debugging the 'labour not found' issue",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/CreateBookingPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/CreateBookingPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-26",
-        "summary": "Verify the backend getLaborerById function in main.mo correctly retrieves laborer data and returns null only when the laborer genuinely does not exist, ensuring proper handling of Principal-based lookups and state access",
+        "id": "REQ-37",
+        "summary": "Add a unique labour ID field to the Laborer type in backend/main.mo that is automatically generated and assigned when a new laborer profile is created, ensuring each laborer has a unique, human-readable identifier (e.g., 'LAB-00001', 'LAB-00002') that can be used for reference and communication",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
+      },
+      {
+        "id": "REQ-38",
+        "summary": "Add a mobile number field to the Laborer type in backend/main.mo to store contact information for each laborer, including validation for proper phone number format",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-39",
+        "summary": "Update the ProfilePage.tsx laborer profile form to include a mobile number input field that allows users to enter and edit their contact phone number",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ProfilePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ProfilePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-40",
+        "summary": "Display the labour ID prominently on the ProfilePage.tsx for each laborer, showing it as a read-only identifier field that helps users reference their unique ID",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ProfilePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ProfilePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-41",
+        "summary": "Add mobile number display to the DiscoveryPage.tsx laborer cards so users can see contact information when browsing available laborers",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DiscoveryPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DiscoveryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-42",
+        "summary": "Display both the provider's and requester's mobile numbers in the BookingDetailPage.tsx to facilitate direct communication between the two parties involved in the booking",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/BookingDetailPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/BookingDetailPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-43",
+        "summary": "Debug and fix the outgoing bookings display issue in BookingsDashboard.tsx where outgoing bookings do not appear after successful booking creation, investigating the booking classification logic, principal matching, query refetching, and ensuring newly created bookings immediately appear in the outgoing requests section",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/pages/BookingsDashboard.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-44",
+        "summary": "Add comprehensive logging to the BookingsDashboard.tsx outgoing bookings filtering and rendering flow to capture when bookings are fetched, how they are classified as outgoing, and any timing issues that prevent immediate display after creation",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/pages/BookingsDashboard.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-45",
+        "summary": "Verify that the createBooking mutation in useQueries.ts properly invalidates the booking queries cache after successful creation, ensuring the BookingsDashboard refetches and displays the new outgoing booking immediately",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
@@ -56,7 +111,9 @@
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/CreateBookingPage.tsx",
+    "frontend/src/pages/BookingDetailPage.tsx",
+    "frontend/src/pages/DiscoveryPage.tsx",
+    "frontend/src/pages/ProfilePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Loader2, MapPin, Briefcase, Phone } from 'lucide-react';
+import { Loader2, MapPin, Briefcase, Phone, Smartphone } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import type { LaborerData } from '../backend';
@@ -162,9 +162,15 @@ export default function DiscoveryPage() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Phone className="w-3 h-3" />
-                  {laborer.contact}
+                <div className="space-y-2 pt-2 border-t">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Smartphone className="w-4 h-4 text-amber-600" />
+                    <span className="font-medium text-foreground">{laborer.mobileNumber}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Phone className="w-4 h-4" />
+                    {laborer.contact}
+                  </div>
                 </div>
 
                 <Button 

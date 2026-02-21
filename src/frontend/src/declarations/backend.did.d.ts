@@ -47,9 +47,11 @@ export type BookingStatus = { 'cancelled' : null } |
   { 'confirmed' : null };
 export interface LaborerData {
   'id' : Principal,
+  'laborId' : string,
   'contact' : string,
   'bookings' : Array<Booking>,
   'name' : string,
+  'mobileNumber' : string,
   'availability' : Availability,
   'skills' : Array<string>,
   'location' : string,
@@ -58,6 +60,7 @@ export interface LaborerData {
 export interface LaborerInput {
   'contact' : string,
   'name' : string,
+  'mobileNumber' : string,
   'availability' : Availability,
   'skills' : Array<string>,
   'location' : string,

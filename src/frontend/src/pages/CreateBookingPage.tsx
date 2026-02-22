@@ -158,68 +158,42 @@ export default function CreateBookingPage() {
         onError: (err) => {
           console.error('═══════════════════════════════════════════════════════════');
           console.error('[CreateBookingPage] 🔴 MUTATION ERROR CALLBACK');
-          console.error('[CreateBookingPage] Timestamp:', new Date().toISOString());
           console.error('[CreateBookingPage] Error object:', err);
           console.error('[CreateBookingPage] Error type:', typeof err);
           console.error('[CreateBookingPage] Error constructor:', err?.constructor?.name);
+          console.error('[CreateBookingPage] Timestamp:', new Date().toISOString());
           console.error('═══════════════════════════════════════════════════════════');
           
           let errorMessage = 'Failed to create booking. Please try again.';
           
-          if (err instanceof Error) {
-            console.error('[CreateBookingPage] 📝 Error details:');
-            console.error('[CreateBookingPage]   - Message:', err.message);
-            console.error('[CreateBookingPage]   - Name:', err.name);
-            console.error('[CreateBookingPage]   - Stack:', err.stack);
+          if (err && typeof err === 'object') {
+            console.error('[CreateBookingPage] 🔍 Analyzing error object...');
+            console.error('[CreateBookingPage] Error keys:', Object.keys(err));
             
-            errorMessage = err.message;
-            
-            // Check for specific error types
-            if (err.message.includes('timed out')) {
-              console.error('[CreateBookingPage] 🔍 Timeout error detected');
-              errorMessage = 'The request timed out after 15 seconds. The server may be busy. Please try again in a moment.';
-            } else if (err.message.includes('not found')) {
-              console.error('[CreateBookingPage] 🔍 Not found error detected');
-            } else if (err.message.includes('not authorized')) {
-              console.error('[CreateBookingPage] 🔍 Authorization error detected');
-            } else if (err.message.includes('Invalid')) {
-              console.error('[CreateBookingPage] 🔍 Validation error detected');
+            if ('message' in err && typeof err.message === 'string') {
+              console.error('[CreateBookingPage] Error message:', err.message);
+              errorMessage = err.message;
             }
           }
           
-          console.log('[CreateBookingPage] 📢 Showing error toast with message:', errorMessage);
+          console.error('[CreateBookingPage] 📢 Showing error toast with message:', errorMessage);
           toast.error(errorMessage);
-          console.log('[CreateBookingPage] ❌ Error handling completed');
         },
       });
-
-      console.log('[CreateBookingPage] ⏳ Mutation invoked, waiting for response...');
     } catch (err) {
       console.error('═══════════════════════════════════════════════════════════');
-      console.error('[CreateBookingPage] 💥 EXCEPTION DURING BOOKING SUBMISSION');
+      console.error('[CreateBookingPage] 💥 EXCEPTION DURING BOOKING PREPARATION');
       console.error('[CreateBookingPage] Exception:', err);
-      if (err instanceof Error) {
-        console.error('[CreateBookingPage] Exception message:', err.message);
-        console.error('[CreateBookingPage] Exception stack:', err.stack);
-      }
+      console.error('[CreateBookingPage] Timestamp:', new Date().toISOString());
       console.error('═══════════════════════════════════════════════════════════');
+      
       toast.error('An unexpected error occurred. Please try again.');
     }
   };
 
-  const handleCancel = () => {
-    console.log('[CreateBookingPage] 🔙 Cancel button clicked');
-    try {
-      navigate({ to: '/discover' });
-      console.log('[CreateBookingPage] ✅ Navigation to discover page initiated');
-    } catch (err) {
-      console.error('[CreateBookingPage] ❌ Error navigating to discover page:', err);
-      toast.error('Navigation failed. Please try again.');
-    }
-  };
+  const selectedService = laborer?.services.find((s) => s.name === formData.serviceType);
 
   if (laborerLoading) {
-    console.log('[CreateBookingPage] ⏳ Loading laborer data...');
     return (
       <div className="container py-12 flex justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
@@ -227,73 +201,90 @@ export default function CreateBookingPage() {
     );
   }
 
-  if (!laborer) {
-    console.error('[CreateBookingPage] ❌ Laborer not found for ID:', laborerId);
+  if (laborerError || !laborer) {
     return (
       <div className="container py-12 max-w-2xl">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <AlertCircle className="w-12 h-12 text-destructive" />
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Laborer Not Found</h2>
-                <p className="text-muted-foreground mb-4">
-                  The laborer you're trying to book could not be found.
-                </p>
-                <Button onClick={() => navigate({ to: '/discover' })}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Discovery
-                </Button>
-              </div>
-            </div>
+        <Card className="border-destructive">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertCircle className="w-5 h-5" />
+              Error Loading Laborer
+            </CardTitle>
+            <CardDescription>
+              We couldn't load the laborer information. Please try again.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate({ to: '/discover' })} variant="outline">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Discovery
+            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  console.log('[CreateBookingPage] 🎨 Rendering booking form for:', laborer.name);
-
   return (
     <div className="container py-12 max-w-2xl">
+      <Button variant="ghost" onClick={() => navigate({ to: '/discover' })} className="mb-4">
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Discovery
+      </Button>
+
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Book {laborer.name}</h1>
-        <p className="text-muted-foreground">Fill in the details for your booking request</p>
+        <h1 className="text-3xl font-bold mb-2">Create Booking</h1>
+        <p className="text-muted-foreground">Book {laborer.name} for a service</p>
       </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Laborer Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div>
+            <span className="text-sm text-muted-foreground">Name: </span>
+            <span className="font-medium">{laborer.name}</span>
+          </div>
+          <div>
+            <span className="text-sm text-muted-foreground">Location: </span>
+            <span className="font-medium">{laborer.location}</span>
+          </div>
+          <div>
+            <span className="text-sm text-muted-foreground">Skills: </span>
+            <span className="font-medium">{laborer.skills.join(', ')}</span>
+          </div>
+        </CardContent>
+      </Card>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Booking Details</CardTitle>
-            <CardDescription>Provide information about the service you need</CardDescription>
+            <CardDescription>Fill in the details for your booking request</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {isError && error && (
-              <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                <AlertCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-destructive">
-                    {error instanceof Error ? error.message : 'An error occurred'}
-                  </p>
-                  {error instanceof Error && error.message.includes('timed out') && (
-                    <p className="text-xs text-destructive/80 mt-1">
-                      Your form data has been preserved. You can try submitting again.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="serviceType">Service Type</Label>
-              <Input
+              <select
                 id="serviceType"
                 value={formData.serviceType}
                 onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
-                placeholder="e.g., Plumbing repair, Carpentry work"
+                className="w-full px-3 py-2 border rounded-md bg-background"
                 required
-                disabled={isPending}
-              />
+              >
+                <option value="">Select a service</option>
+                {laborer.services.map((service, idx) => (
+                  <option key={idx} value={service.name}>
+                    {service.name} - ₹{service.priceInInr.toString()}
+                  </option>
+                ))}
+              </select>
+              {selectedService && (
+                <p className="text-sm text-muted-foreground">
+                  {selectedService.description} • ₹{selectedService.priceInInr.toString()}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -304,7 +295,6 @@ export default function CreateBookingPage() {
                 value={formData.dateTime}
                 onChange={(e) => setFormData({ ...formData, dateTime: e.target.value })}
                 required
-                disabled={isPending}
               />
             </div>
 
@@ -318,7 +308,6 @@ export default function CreateBookingPage() {
                 onChange={(e) => setFormData({ ...formData, durationHours: e.target.value })}
                 placeholder="e.g., 2"
                 required
-                disabled={isPending}
               />
             </div>
 
@@ -328,39 +317,41 @@ export default function CreateBookingPage() {
                 id="location"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Where should the work be done?"
+                placeholder="Where should the service be performed?"
                 required
-                disabled={isPending}
               />
             </div>
           </CardContent>
         </Card>
 
-        <div className="flex gap-4">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleCancel}
-            className="flex-1"
-            disabled={isPending}
-          >
-            Cancel
-          </Button>
-          <Button 
-            type="submit" 
-            disabled={isPending} 
-            className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating booking...
-              </>
-            ) : (
-              'Submit Booking'
-            )}
-          </Button>
-        </div>
+        {isError && error && (
+          <Card className="border-destructive">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-2 text-destructive">
+                <AlertCircle className="w-5 h-5 mt-0.5" />
+                <div>
+                  <p className="font-medium">Booking Failed</p>
+                  <p className="text-sm">
+                    {typeof error === 'object' && 'message' in error
+                      ? String(error.message)
+                      : 'An error occurred while creating the booking. Please try again.'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Creating Booking...
+            </>
+          ) : (
+            'Submit Booking Request'
+          )}
+        </Button>
       </form>
     </div>
   );

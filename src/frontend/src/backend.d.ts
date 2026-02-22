@@ -46,8 +46,8 @@ export interface BookingInput {
 }
 export interface Service {
     name: string;
+    priceInInr: bigint;
     description: string;
-    price: bigint;
 }
 export type BookingResponse = {
     __kind__: "ok";
@@ -102,6 +102,7 @@ export enum UserRole {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createBooking(bookingData: BookingInput): Promise<BookingResponse>;
+    getAllBookings(): Promise<Array<Booking>>;
     getBookablesNearLocation(location: string, radius: bigint): Promise<Array<LaborerData>>;
     getCallerLaborer(): Promise<LaborerData | null>;
     getCallerUserProfile(): Promise<UserProfile | null>;

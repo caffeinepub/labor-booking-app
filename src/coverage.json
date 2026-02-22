@@ -1,70 +1,70 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T19:38:27.155Z",
+  "generatedAt": "2026-02-22T10:27:38.002Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 3,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-46",
-        "summary": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section, investigating the booking data flow from creation through query refetch and display logic",
+        "id": "REQ-61",
+        "summary": "Replace all dollar sign ($) currency symbols with Indian Rupee symbol (₹) throughout the frontend application",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx",
-          "frontend/src/pages/BookingsDashboard.tsx"
+          "frontend/src/pages/ProfilePage.tsx",
+          "frontend/src/pages/DiscoveryPage.tsx",
+          "frontend/src/pages/BookingDetailPage.tsx",
+          "frontend/src/pages/CreateBookingPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx",
-          "frontend/src/pages/BookingsDashboard.tsx"
+          "frontend/src/pages/ProfilePage.tsx",
+          "frontend/src/pages/DiscoveryPage.tsx",
+          "frontend/src/pages/CreateBookingPage.tsx"
         ]
       },
       {
-        "id": "REQ-47",
-        "summary": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings, including query fetch status, booking array contents, principal comparisons for classification, and timing of re-renders after booking creation",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-48",
-        "summary": "Verify that the createBooking mutation in useQueries.ts properly triggers query invalidation for the 'bookings' query key after successful booking creation, ensuring the BookingsDashboard automatically refetches and displays the new outgoing booking",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/hooks/useQueries.ts"
-        ],
+        "id": "REQ-62",
+        "summary": "Update all price-related data models in backend/main.mo to store and return prices in INR instead of dollars",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-49",
-        "summary": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section, ensuring proper React Query cache synchronization",
+        "id": "REQ-63",
+        "summary": "Update all price input fields and displays across ProfilePage.tsx, CreateBookingPage.tsx, BookingDetailPage.tsx, and DiscoveryPage.tsx to show INR symbol (₹) and use appropriate INR formatting",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx",
-          "frontend/src/pages/BookingsDashboard.tsx"
+          "frontend/src/pages/ProfilePage.tsx",
+          "frontend/src/pages/DiscoveryPage.tsx",
+          "frontend/src/pages/BookingDetailPage.tsx",
+          "frontend/src/pages/CreateBookingPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/BookingsDashboard.tsx",
-          "frontend/src/pages/BookingsDashboard.tsx"
+          "frontend/src/pages/ProfilePage.tsx",
+          "frontend/src/pages/DiscoveryPage.tsx",
+          "frontend/src/pages/CreateBookingPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/pages/BookingsDashboard.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/pages/CreateBookingPage.tsx",
+    "frontend/src/pages/DiscoveryPage.tsx",
+    "frontend/src/pages/ProfilePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-debug-and-fix-the-outgoing-service-generation-issue-in-bookingsdashboard-tsx-where-bookings-created-for-a-target-laborer-where-the-current-user-is-the-requester-are-not-appearing-in-the-outgoing-requests-section-investigating-the-booking-data-flow-from-creation-through-query-refetch-and-display-logic",
-      "featureTitle": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section, investigating the booking data flow from creation through query refetch and display logic",
+      "featureId": "feature-replace-all-dollar-sign-currency-symbols-with-indian-rupee-symbol-throughout-the-frontend-application",
+      "featureTitle": "Replace all dollar sign ($) currency symbols with Indian Rupee symbol (₹) throughout the frontend application",
       "files": [
-        "frontend/src/pages/BookingsDashboard.tsx"
+        "frontend/src/pages/CreateBookingPage.tsx",
+        "frontend/src/pages/DiscoveryPage.tsx",
+        "frontend/src/pages/ProfilePage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -16,15 +18,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-46"
+        "REQ-61"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-comprehensive-debug-logging-to-the-bookingsdashboard-tsx-component-to-track-the-complete-data-flow-for-outgoing-bookings-including-query-fetch-status-booking-array-contents-principal-comparisons-for-classification-and-timing-of-re-renders-after-booking-creation",
-      "featureTitle": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings, including query fetch status, booking array contents, principal comparisons for classification, and timing of re-renders after booking creation",
+      "featureId": "feature-update-all-price-input-fields-and-displays-across-profilepage-tsx-createbookingpage-tsx-bookingdetailpage-tsx-and-discoverypage-tsx-to-show-inr-symbol-and-use-appropriate-inr-formatting",
+      "featureTitle": "Update all price input fields and displays across ProfilePage.tsx, CreateBookingPage.tsx, BookingDetailPage.tsx, and DiscoveryPage.tsx to show INR symbol (₹) and use appropriate INR formatting",
       "files": [
-        "frontend/src/pages/BookingsDashboard.tsx"
+        "frontend/src/pages/CreateBookingPage.tsx",
+        "frontend/src/pages/DiscoveryPage.tsx",
+        "frontend/src/pages/ProfilePage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -35,26 +39,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-47"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-investigate-and-fix-any-timing-issues-or-race-conditions-in-bookingsdashboard-tsx-that-might-prevent-newly-created-bookings-from-appearing-immediately-in-the-outgoing-requests-section-ensuring-proper-react-query-cache-synchronization",
-      "featureTitle": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section, ensuring proper React Query cache synchronization",
-      "files": [
-        "frontend/src/pages/BookingsDashboard.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-49"
+        "REQ-63"
       ],
       "confidence": "high"
     }

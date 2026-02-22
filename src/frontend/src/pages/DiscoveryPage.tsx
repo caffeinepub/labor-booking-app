@@ -148,34 +148,37 @@ export default function DiscoveryPage() {
                   </div>
                 </div>
 
-                {laborer.services.length > 0 && (
-                  <div>
-                    <div className="text-sm font-medium mb-2">Services</div>
-                    <div className="space-y-1">
-                      {laborer.services.slice(0, 3).map((service, idx) => (
-                        <div key={idx} className="text-sm flex justify-between">
-                          <span className="text-muted-foreground">{service.name}</span>
-                          <span className="font-semibold text-amber-600">${service.price.toString()}</span>
-                        </div>
-                      ))}
+                {laborer.mobileNumber && (
+                  <div className="pt-2 border-t">
+                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                      <Smartphone className="w-4 h-4" />
+                      <span className="font-semibold">{laborer.mobileNumber}</span>
                     </div>
                   </div>
                 )}
 
-                <div className="space-y-2 pt-2 border-t">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Smartphone className="w-4 h-4 text-amber-600" />
-                    <span className="font-medium text-foreground">{laborer.mobileNumber}</span>
+                {laborer.services.length > 0 && (
+                  <div className="pt-2 border-t">
+                    <div className="text-sm font-medium mb-2">Services</div>
+                    <div className="space-y-1">
+                      {laborer.services.slice(0, 3).map((service, idx) => (
+                        <div key={idx} className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">{service.name}</span>
+                          <span className="font-semibold text-amber-600">₹{service.priceInInr.toString()}</span>
+                        </div>
+                      ))}
+                      {laborer.services.length > 3 && (
+                        <p className="text-xs text-muted-foreground">
+                          +{laborer.services.length - 3} more services
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Phone className="w-4 h-4" />
-                    {laborer.contact}
-                  </div>
-                </div>
+                )}
 
                 <Button 
+                  className="w-full" 
                   onClick={() => handleBookNowClick(laborer.id.toString(), laborer.name)}
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
                 >
                   Book Now
                 </Button>

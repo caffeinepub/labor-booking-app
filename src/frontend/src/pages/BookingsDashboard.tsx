@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useGetCallerLaborer, useUpdateBookingStatus } from '../hooks/useQueries';
+import { useGetBookings, useUpdateBookingStatus } from '../hooks/useQueries';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useBookingFilters } from '../hooks/useBookingFilters';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -7,17 +7,16 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Loader2, Calendar, MapPin, Clock, User, Filter, ArrowUpDown, AlertCircle } from 'lucide-react';
+import { Loader2, Calendar, MapPin, Clock, User, Filter, ArrowUpDown } from 'lucide-react';
 import { useNavigate, Link } from '@tanstack/react-router';
 import { BookingStatus, type Booking } from '../backend';
 import BookingHistorySection from '../components/BookingHistorySection';
 import { toast } from 'sonner';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 
 export default function BookingsDashboard() {
   const { identity } = useInternetIdentity();
   const navigate = useNavigate();
-  const { data: laborer, isLoading, isRefetching } = useGetCallerLaborer();
+  const { data: bookingsData, isLoading, isRefetching, refetch } = useGetBookings();
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateBookingStatus();
   
   const [statusFilter, setStatusFilter] = useState<BookingStatus | 'all'>('all');
@@ -29,69 +28,25 @@ export default function BookingsDashboard() {
     }
   }, [identity, navigate]);
 
+  // Refetch on mount to ensure fresh data
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   const myPrincipal = identity?.getPrincipal().toString();
 
-  // Enhanced logging for debugging outgoing bookings
   console.log('═══════════════════════════════════════════════════════════');
   console.log('[BookingsDashboard] 📊 DASHBOARD STATE');
   console.log('[BookingsDashboard] Timestamp:', new Date().toISOString());
   console.log('[BookingsDashboard] Current user principal:', myPrincipal);
-  console.log('[BookingsDashboard] Laborer data loaded:', !!laborer);
+  console.log('[BookingsDashboard] Bookings data loaded:', !!bookingsData);
   console.log('[BookingsDashboard] Is refetching:', isRefetching);
-  console.log('[BookingsDashboard] Total bookings in laborer record:', laborer?.bookings.length || 0);
+  console.log('[BookingsDashboard] Outgoing bookings:', bookingsData?.outgoing.length || 0);
+  console.log('[BookingsDashboard] Incoming bookings:', bookingsData?.incoming.length || 0);
   console.log('═══════════════════════════════════════════════════════════');
 
-  if (laborer?.bookings) {
-    console.log('[BookingsDashboard] 📋 ALL BOOKINGS DETAILS:');
-    laborer.bookings.forEach((booking, index) => {
-      const isRequesterMatch = booking.requester.toString() === myPrincipal;
-      const isTargetMatch = booking.targetLaborer.toString() === myPrincipal;
-      
-      console.log(`[BookingsDashboard] Booking ${index + 1}:`, {
-        id: booking.id.toString(),
-        requester: booking.requester.toString(),
-        targetLaborer: booking.targetLaborer.toString(),
-        status: booking.status,
-        serviceType: booking.serviceType,
-        isRequesterMatch,
-        isTargetMatch,
-        classification: isRequesterMatch ? 'OUTGOING' : isTargetMatch ? 'INCOMING' : 'UNKNOWN',
-      });
-    });
-  }
-
-  const outgoingBookings = laborer?.bookings.filter((b) => {
-    const isMatch = b.requester.toString() === myPrincipal;
-    console.log('[BookingsDashboard] 🔍 Outgoing filter - Booking ID:', b.id.toString(), 'Match:', isMatch);
-    return isMatch;
-  }) || [];
-  
-  const incomingBookings = laborer?.bookings.filter((b) => {
-    const isMatch = b.targetLaborer.toString() === myPrincipal;
-    console.log('[BookingsDashboard] 🔍 Incoming filter - Booking ID:', b.id.toString(), 'Match:', isMatch);
-    return isMatch;
-  }) || [];
-
-  console.log('═══════════════════════════════════════════════════════════');
-  console.log('[BookingsDashboard] 📊 FILTERED RESULTS:');
-  console.log('[BookingsDashboard] Outgoing bookings count:', outgoingBookings.length);
-  console.log('[BookingsDashboard] Incoming bookings count:', incomingBookings.length);
-  console.log('═══════════════════════════════════════════════════════════');
-
-  // Check if there's a backend architecture limitation
-  const hasBackendLimitation = outgoingBookings.length === 0 && laborer?.bookings && laborer.bookings.length > 0;
-  
-  if (hasBackendLimitation) {
-    console.warn('═══════════════════════════════════════════════════════════');
-    console.warn('[BookingsDashboard] ⚠️ BACKEND ARCHITECTURE LIMITATION DETECTED');
-    console.warn('[BookingsDashboard] No outgoing bookings found, but laborer has bookings');
-    console.warn('[BookingsDashboard] REASON: Bookings are stored ONLY in the target laborer\'s record');
-    console.warn('[BookingsDashboard] IMPACT: Requesters cannot see their outgoing bookings');
-    console.warn('[BookingsDashboard] SOLUTION: Backend needs to store bookings in BOTH requester and target laborer records');
-    console.warn('[BookingsDashboard] Current bookings in record:', laborer.bookings.length);
-    console.warn('[BookingsDashboard] All are incoming (user is target laborer)');
-    console.warn('═══════════════════════════════════════════════════════════');
-  }
+  const outgoingBookings = bookingsData?.outgoing || [];
+  const incomingBookings = bookingsData?.incoming || [];
 
   const { filterAndSortBookings } = useBookingFilters();
 
@@ -362,17 +317,6 @@ export default function BookingsDashboard() {
         <p className="text-muted-foreground">Manage your booking requests and jobs</p>
       </div>
 
-      {hasBackendLimitation && (
-        <Alert className="mb-6 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-          <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          <AlertTitle className="text-amber-800 dark:text-amber-300">Outgoing Bookings Not Available</AlertTitle>
-          <AlertDescription className="text-amber-700 dark:text-amber-400">
-            Due to a backend limitation, outgoing booking requests you create for other laborers are not currently visible in your dashboard. 
-            Only incoming requests (where others book you) are displayed. This is a known issue that requires a backend update to resolve.
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-muted-foreground" />
@@ -402,77 +346,58 @@ export default function BookingsDashboard() {
             </SelectContent>
           </Select>
         </div>
-
-        {statusFilter !== 'all' && (
-          <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')}>
-            Clear Filters
-          </Button>
-        )}
       </div>
 
-      <Tabs defaultValue="incoming" className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="incoming">Incoming ({incomingBookings.length})</TabsTrigger>
-          <TabsTrigger value="outgoing">Outgoing ({outgoingBookings.length})</TabsTrigger>
+      <Tabs defaultValue="outgoing" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="outgoing">
+            Outgoing Requests ({activeOutgoing.length})
+          </TabsTrigger>
+          <TabsTrigger value="incoming">
+            Incoming Requests ({activeIncoming.length})
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="incoming" className="space-y-6">
-          {activeIncoming.length === 0 && historyIncoming.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
-                No incoming booking requests yet
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {activeIncoming.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Active Requests</h2>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {activeIncoming.map((booking) => (
-                      <BookingCard key={booking.id.toString()} booking={booking} isIncoming={true} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {historyIncoming.length > 0 && (
-                <BookingHistorySection bookings={historyIncoming} isIncoming={true} />
-              )}
-            </>
-          )}
-        </TabsContent>
-
         <TabsContent value="outgoing" className="space-y-6">
-          {activeOutgoing.length === 0 && historyOutgoing.length === 0 ? (
+          {activeOutgoing.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground mb-4">No outgoing booking requests yet</p>
-                {hasBackendLimitation && (
-                  <p className="text-sm text-amber-600 dark:text-amber-400">
-                    Note: Outgoing bookings are currently not tracked due to a backend limitation.
-                  </p>
-                )}
+                <p className="text-muted-foreground">No active outgoing bookings</p>
               </CardContent>
             </Card>
           ) : (
-            <>
-              {activeOutgoing.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Active Requests</h2>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {activeOutgoing.map((booking) => (
-                      <BookingCard key={booking.id.toString()} booking={booking} isIncoming={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {historyOutgoing.length > 0 && (
-                <BookingHistorySection bookings={historyOutgoing} isIncoming={false} />
-              )}
-            </>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {activeOutgoing.map((booking) => (
+                <BookingCard key={booking.id.toString()} booking={booking} isIncoming={false} />
+              ))}
+            </div>
           )}
+
+          <BookingHistorySection
+            bookings={historyOutgoing}
+            isIncoming={false}
+          />
+        </TabsContent>
+
+        <TabsContent value="incoming" className="space-y-6">
+          {activeIncoming.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">No active incoming bookings</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {activeIncoming.map((booking) => (
+                <BookingCard key={booking.id.toString()} booking={booking} isIncoming={true} />
+              ))}
+            </div>
+          )}
+
+          <BookingHistorySection
+            bookings={historyIncoming}
+            isIncoming={true}
+          />
         </TabsContent>
       </Tabs>
     </div>

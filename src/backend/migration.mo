@@ -1,23 +1,22 @@
 import Map "mo:core/Map";
 import List "mo:core/List";
-import Nat "mo:core/Nat";
 import Principal "mo:core/Principal";
-import Text "mo:core/Text";
+import Time "mo:core/Time";
 
 module {
-  type OldAvailability = {
-    status : { #available; #unavailable; #onJob; #pending; #custom : Text };
-    lastUpdated : Int;
-  };
-
   type OldBooking = {
     id : Nat;
-    requester : Principal;
-    targetLaborer : Principal;
+    requester : Principal.Principal;
+    targetLaborer : Principal.Principal;
     serviceType : Text;
-    dateTime : Int;
+    dateTime : Time.Time;
     durationHours : Nat;
-    status : { #pending; #confirmed; #completed; #cancelled };
+    status : {
+      #pending;
+      #confirmed;
+      #completed;
+      #cancelled;
+    };
     location : Text;
     details : ?Text;
   };
@@ -29,24 +28,7 @@ module {
   };
 
   type OldLaborer = {
-    id : Principal;
-    name : Text;
-    skills : [Text];
-    services : List.List<OldService>;
-    location : Text;
-    contact : Text;
-    availability : OldAvailability;
-    bookings : List.List<OldBooking>;
-  };
-
-  type OldActor = {
-    laborersStore : Map.Map<Principal, OldLaborer>;
-    userProfiles : Map.Map<Principal, { name : Text }>;
-    nextBookingId : Nat;
-  };
-
-  type NewLaborer = {
-    id : Principal;
+    id : Principal.Principal;
     laborId : Text;
     name : Text;
     skills : [Text];
@@ -54,40 +36,78 @@ module {
     location : Text;
     contact : Text;
     mobileNumber : Text;
-    availability : OldAvailability;
+    availability : {
+      status : {
+        #available;
+        #unavailable;
+        #onJob;
+        #pending;
+        #custom : Text;
+      };
+      lastUpdated : Time.Time;
+    };
     bookings : List.List<OldBooking>;
   };
 
-  type NewActor = {
-    laborersStore : Map.Map<Principal, NewLaborer>;
-    userProfiles : Map.Map<Principal, { name : Text }>;
+  type OldActor = {
+    laborersStore : Map.Map<Principal.Principal, OldLaborer>;
+    userProfiles : Map.Map<Principal.Principal, { name : Text }>;
     nextBookingId : Nat;
     nextLaborId : Nat;
   };
 
-  func generateLaborId(principal : Principal) : Text {
-    principal.toText();
+  type NewBooking = OldBooking;
+
+  type NewService = {
+    name : Text;
+    priceInInr : Nat;
+    description : Text;
   };
 
-  func defaultMobileNumber() : Text {
-    "0000000000";
+  type NewLaborer = {
+    id : Principal.Principal;
+    laborId : Text;
+    name : Text;
+    skills : [Text];
+    services : List.List<NewService>;
+    location : Text;
+    contact : Text;
+    mobileNumber : Text;
+    availability : {
+      status : {
+        #available;
+        #unavailable;
+        #onJob;
+        #pending;
+        #custom : Text;
+      };
+      lastUpdated : Time.Time;
+    };
+    bookings : List.List<NewBooking>;
+  };
+
+  type NewActor = {
+    laborersStore : Map.Map<Principal.Principal, NewLaborer>;
+    userProfiles : Map.Map<Principal.Principal, { name : Text }>;
+    nextBookingId : Nat;
+    nextLaborId : Nat;
   };
 
   public func run(old : OldActor) : NewActor {
-    let transformedLaborers = old.laborersStore.map<Principal, OldLaborer, NewLaborer>(
-      func(principal, oldLaborer) {
-        {
-          oldLaborer with
-          laborId = generateLaborId(principal);
-          mobileNumber = defaultMobileNumber();
-        };
+    let newLaborersStore = old.laborersStore.map<Principal.Principal, OldLaborer, NewLaborer>(
+      func(_id, oldLaborer) {
+        let newServices = oldLaborer.services.map<OldService, NewService>(
+          func(oldService) {
+            {
+              name = oldService.name;
+              priceInInr = oldService.price;
+              description = oldService.description;
+            };
+          }
+        );
+        { oldLaborer with services = newServices };
       }
     );
-    {
-      laborersStore = transformedLaborers;
-      userProfiles = old.userProfiles;
-      nextBookingId = old.nextBookingId;
-      nextLaborId = transformedLaborers.size();
-    };
+    { old with laborersStore = newLaborersStore };
   };
 };

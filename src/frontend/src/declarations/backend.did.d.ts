@@ -68,8 +68,8 @@ export interface LaborerInput {
 }
 export interface Service {
   'name' : string,
+  'priceInInr' : bigint,
   'description' : string,
-  'price' : bigint,
 }
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
@@ -80,6 +80,7 @@ export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createBooking' : ActorMethod<[BookingInput], BookingResponse>,
+  'getAllBookings' : ActorMethod<[], Array<Booking>>,
   'getBookablesNearLocation' : ActorMethod<
     [string, bigint],
     Array<LaborerData>

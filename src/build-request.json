@@ -1,86 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Fix outgoing service generation for target laborer",
-  "priority": "high",
+  "title": "Change currency from dollar to Indian Rupee (INR)",
+  "projectName": "Labor Booking",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-46",
-      "text": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section, investigating the booking data flow from creation through query refetch and display logic",
+      "id": "REQ-61",
+      "text": "Replace all dollar sign ($) currency symbols with Indian Rupee symbol (₹) throughout the frontend application",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-last"
         ],
         "quotes": [
-          "FOR TARGET LABOURER OUTGOING SERVICE IS NOT GENERATING"
+          "NO CAN YOU PLEASE CHANGE THE PRICE FROM DOLLAR TO INR"
         ]
       },
       "acceptanceCriteria": [
-        "When a laborer creates a booking request for another laborer (target laborer), the booking immediately appears in the requester's outgoing requests section",
-        "The outgoing requests section correctly identifies bookings where the current user is the requester",
-        "Newly created bookings are displayed without requiring manual page refresh",
-        "The booking classification logic properly distinguishes between outgoing and incoming bookings based on requester/provider principals"
+        "All instances of '$' are replaced with '₹' in the UI",
+        "Currency formatting uses INR conventions (e.g., ₹1,234.56)",
+        "No dollar symbols remain visible in any frontend component"
       ]
     },
     {
-      "id": "REQ-47",
-      "text": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings, including query fetch status, booking array contents, principal comparisons for classification, and timing of re-renders after booking creation",
-      "target": "frontend",
+      "id": "REQ-62",
+      "text": "Update all price-related data models in backend/main.mo to store and return prices in INR instead of dollars",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-last"
+        ],
+        "quotes": [
+          "NO CAN YOU PLEASE CHANGE THE PRICE FROM DOLLAR TO INR"
         ]
       },
       "acceptanceCriteria": [
-        "Console logs capture when bookings query is refetched after a new booking is created",
-        "Logs show the principal comparison logic that classifies bookings as outgoing vs incoming",
-        "Logs display the number of outgoing bookings found and their IDs",
-        "Logs indicate whether the query invalidation and refetch successfully triggered after booking creation"
+        "Backend data models use INR as the currency unit",
+        "All price values are stored in INR",
+        "Currency type or unit is documented in backend types if applicable"
       ]
     },
     {
-      "id": "REQ-48",
-      "text": "Verify that the createBooking mutation in useQueries.ts properly triggers query invalidation for the 'bookings' query key after successful booking creation, ensuring the BookingsDashboard automatically refetches and displays the new outgoing booking",
+      "id": "REQ-63",
+      "text": "Update all price input fields and displays across ProfilePage.tsx, CreateBookingPage.tsx, BookingDetailPage.tsx, and DiscoveryPage.tsx to show INR symbol (₹) and use appropriate INR formatting",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-last"
+        ],
+        "quotes": [
+          "NO CAN YOU PLEASE CHANGE THE PRICE FROM DOLLAR TO INR"
         ]
       },
       "acceptanceCriteria": [
-        "The onSuccess callback in createBooking mutation explicitly invalidates the bookings query",
-        "Query invalidation triggers an immediate refetch of all bookings",
-        "The BookingsDashboard receives updated booking data including the newly created booking",
-        "No manual refresh is required for the new booking to appear in the outgoing section"
-      ]
-    },
-    {
-      "id": "REQ-49",
-      "text": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section, ensuring proper React Query cache synchronization",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-latest"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The dashboard properly handles the transition from booking creation to display",
-        "No race conditions exist between query invalidation and component re-render",
-        "The outgoing bookings filter function correctly processes newly added bookings",
-        "Component state properly reflects the updated bookings array after refetch"
+        "Price input fields display ₹ prefix or INR label",
+        "Price displays use ₹ symbol throughout the application",
+        "Number formatting follows Indian numbering system conventions where appropriate"
       ]
     }
   ],
   "constraints": [
-    "Do not modify backend/main.mo unless the issue is proven to be in backend data storage or retrieval",
-    "Preserve all existing booking classification logic that correctly handles incoming bookings",
-    "Maintain the existing query invalidation patterns used throughout useQueries.ts"
+    "Do not modify Internet Identity authentication logic in useInternetIdentity.ts",
+    "Do not edit UI component sources in frontend/src/components/ui",
+    "Preserve existing booking and profile data structures"
   ],
   "nonGoals": [
-    "Redesigning the bookings dashboard UI layout",
-    "Adding new booking statuses or workflow states",
-    "Modifying the backend booking data model",
-    "Changing authentication or Internet Identity integration"
+    "Multi-currency support or currency conversion",
+    "Historical price migration or data conversion",
+    "Payment gateway integration"
   ],
   "imageRequirements": {
     "required": [],

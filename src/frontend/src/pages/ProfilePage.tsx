@@ -86,7 +86,7 @@ export default function ProfilePage() {
       const newService: Service = {
         name: serviceForm.name.trim(),
         description: serviceForm.description.trim(),
-        price: BigInt(serviceForm.price),
+        priceInInr: BigInt(serviceForm.price),
       };
       setFormData({ ...formData, services: [...formData.services, newService] });
       setServiceForm({ name: '', description: '', price: '' });
@@ -255,7 +255,7 @@ export default function ProfilePage() {
         <Card>
           <CardHeader>
             <CardTitle>Services Offered</CardTitle>
-            <CardDescription>List the services you provide with pricing</CardDescription>
+            <CardDescription>List the services you provide with pricing in INR</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4">
@@ -275,7 +275,7 @@ export default function ProfilePage() {
                     type="number"
                     value={serviceForm.price}
                     onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
-                    placeholder="Price"
+                    placeholder="Price (₹)"
                   />
                   <Button type="button" onClick={addService} variant="outline">
                     <Plus className="w-4 h-4" />
@@ -291,7 +291,7 @@ export default function ProfilePage() {
                     <div className="text-sm text-muted-foreground">{service.description}</div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold text-amber-600">${service.price.toString()}</span>
+                    <span className="font-semibold text-amber-600">₹{service.priceInInr.toString()}</span>
                     <button
                       type="button"
                       onClick={() => removeService(index)}

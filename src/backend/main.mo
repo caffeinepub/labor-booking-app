@@ -9,9 +9,9 @@ import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
-
-
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -48,7 +48,7 @@ actor {
 
   public type Service = {
     name : Text;
-    price : Nat;
+    priceInInr : Nat;
     description : Text;
   };
 
@@ -313,6 +313,27 @@ actor {
     #ok(bookingId);
   };
 
+  public shared ({ caller }) func getAllBookings() : async [Booking] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view bookings");
+    };
+
+    var allBookings = List.empty<Booking>();
+
+    for ((_, laborer) in laborersStore.entries()) {
+      laborer.bookings.toVarArray().forEach(
+        func(booking) {
+          if (booking.requester == caller or booking.targetLaborer == caller or AccessControl.isAdmin(accessControlState, caller)) {
+            // Add the booking to the allBookings list
+            allBookings.add(booking);
+          };
+        }
+      );
+    };
+
+    allBookings.toArray();
+  };
+
   public shared ({ caller }) func getBookablesNearLocation(location : Text, radius : Nat) : async [LaborerData] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access this endpoint");
@@ -364,8 +385,8 @@ actor {
       case (?b) { b };
     };
 
-    if (caller != booking.requester and caller != booking.targetLaborer) {
-      Runtime.trap("Unauthorized: Only the requester or target laborer can update");
+    if (caller != booking.requester and caller != booking.targetLaborer and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only the requester, target laborer, or admin can update");
     };
 
     let updatedBookings = laborer.bookings.map<Booking, Booking>(
@@ -431,8 +452,8 @@ actor {
       case (?b) { b };
     };
 
-    if (caller != booking.targetLaborer) {
-      Runtime.trap("Unauthorized: Only the target laborer can update details");
+    if (caller != booking.targetLaborer and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only the target laborer or admin can update details");
     };
 
     let updatedBookings = laborer.bookings.map<Booking, Booking>(

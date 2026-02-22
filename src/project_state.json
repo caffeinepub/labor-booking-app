@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 23,
+  "projectStateVersion": 29,
   "summary": "Labor booking app where laborers can book services from neighboring laborers",
   "architectural_notes": [
     "User type: Laborers (both service providers and consumers)",
@@ -10,7 +10,8 @@
   "known_issues": [
     "Booking service not working after Version 7 deployment",
     "Outgoing bookings not appearing in booking section after successful booking creation",
-    "Target laborer outgoing service is not generating"
+    "Target laborer outgoing service is not generating",
+    "Version 12 - Multiple components/features not functioning after deployment"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -309,6 +310,78 @@
         "REQ-49"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-element-at-xpath-html-1-body-1-div-1-div-1-main-1-div-1-div-3-div-3-div-1-div-1-in-bookingsdashboard-tsx-that-is-responsible-for-displaying-outgoing-bookings-investigate-why-bookings-created-by-the-current-user-where-they-are-the-requester-are-not-appearing-in-this-section-after-successful-booking-creation-verify-the-booking-classification-logic-correctly-identifies-outgoing-bookings-by-comparing-the-booking-s-requesterid-with-the-current-user-s-principal",
+      "title": "Debug and fix the element at XPath /html[1]/body[1]/div[1]/div[1]/main[1]/div[1]/div[3]/div[3]/div[1]/div[1] in BookingsDashboard.tsx that is responsible for displaying outgoing bookings. Investigate why bookings created by the current user (where they are the requester) are not appearing in this section after successful booking creation. Verify the booking classification logic correctly identifies outgoing bookings by comparing the booking's requesterId with the current user's principal.",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-debug-logging-to-the-element-at-xpath-html-1-body-1-div-1-div-1-main-1-div-1-div-3-div-3-div-1-div-1-to-capture-the-complete-data-flow-for-outgoing-bookings-display-log-the-raw-bookings-array-received-from-the-query-the-current-user-s-principal-used-for-filtering-the-filtering-logic-execution-results-showing-which-bookings-are-classified-as-outgoing-the-final-filtered-array-count-and-any-render-conditions-that-might-hide-the-element",
+      "title": "Add comprehensive debug logging to the element at XPath /html[1]/body[1]/div[1]/div[1]/main[1]/div[1]/div[3]/div[3]/div[1]/div[1] to capture the complete data flow for outgoing bookings display. Log the raw bookings array received from the query, the current user's principal used for filtering, the filtering logic execution results showing which bookings are classified as outgoing, the final filtered array count, and any render conditions that might hide the element.",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-any-react-query-cache-synchronization-issues-in-bookingsdashboard-tsx-that-prevent-the-outgoing-bookings-element-from-updating-after-booking-creation-verify-that-the-bookings-query-is-properly-invalidated-after-the-createbooking-mutation-succeeds-ensure-the-query-refetch-completes-before-the-dashboard-renders-and-check-for-any-race-conditions-between-navigation-to-the-dashboard-and-query-data-availability",
+      "title": "Investigate and fix any React Query cache synchronization issues in BookingsDashboard.tsx that prevent the outgoing bookings element from updating after booking creation. Verify that the 'bookings' query is properly invalidated after the createBooking mutation succeeds, ensure the query refetch completes before the dashboard renders, and check for any race conditions between navigation to the dashboard and query data availability.",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-emergency-diagnostic-logging-to-all-frontend-pages-landingpage-profilepage-discoverypage-createbookingpage-bookingsdashboard-bookingdetailpage-that-captures-component-mount-status-query-states-authentication-status-actor-initialization-and-any-error-conditions-on-page-load",
+      "title": "Add emergency diagnostic logging to all frontend pages (LandingPage, ProfilePage, DiscoveryPage, CreateBookingPage, BookingsDashboard, BookingDetailPage) that captures component mount status, query states, authentication status, actor initialization, and any error conditions on page load",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-any-routing-issues-in-app-tsx-that-prevent-navigation-between-pages-or-cause-pages-to-fail-to-render-including-route-configuration-lazy-loading-errors-and-navigation-guards",
+      "title": "Investigate and fix any routing issues in App.tsx that prevent navigation between pages or cause pages to fail to render, including route configuration, lazy loading errors, and navigation guards",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-internet-identity-authentication-in-useinternetidentity-ts-is-functioning-correctly-including-login-flow-identity-persistence-principal-extraction-and-logout-functionality",
+      "title": "Verify that Internet Identity authentication in useInternetIdentity.ts is functioning correctly, including login flow, identity persistence, principal extraction, and logout functionality",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-system-health-check-page-or-component-that-displays-the-operational-status-of-all-critical-system-components-including-authentication-backend-actor-data-queries-and-provides-actionable-error-messages-when-components-fail",
+      "title": "Add a system health check page or component that displays the operational status of all critical system components including authentication, backend actor, data queries, and provides actionable error messages when components fail",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-all-dollar-sign-currency-symbols-with-indian-rupee-symbol-throughout-the-frontend-application",
+      "title": "Replace all dollar sign ($) currency symbols with Indian Rupee symbol (₹) throughout the frontend application",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-price-input-fields-and-displays-across-profilepage-tsx-createbookingpage-tsx-bookingdetailpage-tsx-and-discoverypage-tsx-to-show-inr-symbol-and-use-appropriate-inr-formatting",
+      "title": "Update all price input fields and displays across ProfilePage.tsx, CreateBookingPage.tsx, BookingDetailPage.tsx, and DiscoveryPage.tsx to show INR symbol (₹) and use appropriate INR formatting",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -453,6 +526,52 @@
       "summary": "Verify that the createBooking mutation in useQueries.ts properly triggers query invalidation for the 'bookings' query key after successful booking creation, ensuring the BookingsDashboard automatically refetches and displays the new outgoing booking",
       "reqIds": [
         "REQ-48"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Perform comprehensive end-to-end testing of all critical user flows including authentication, profile management, laborer discovery, booking creation, and bookings dashboard to identify which specific features are broken in Version 12",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Verify that the backend actor in useActor.ts is initializing correctly with proper authentication state and that all backend canister functions (getUserProfile, getLaborerById, createBooking, getAllBookings) are accessible and responding",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Debug and fix any React Query configuration issues in main.tsx that might cause queries to fail or not execute, including query client settings, stale time, cache time, and retry logic",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Check for any TypeScript compilation errors, missing dependencies, or build configuration issues that might cause runtime failures after Version 12 deployment",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Change currency from dollar ($) to Indian Rupee (INR/₹) throughout the application for all pricing displays",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-44",
+      "summary": "Update all price-related data models in backend/main.mo to store and return prices in INR instead of dollars",
+      "reqIds": [
+        "REQ-62"
       ],
       "status": "pending"
     }

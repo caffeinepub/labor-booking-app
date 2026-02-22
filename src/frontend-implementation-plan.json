@@ -1,88 +1,67 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix outgoing service generation for target laborer",
+  "title": "Change currency from dollar to Indian Rupee (INR)",
   "requirements": [
     {
-      "id": "REQ-46",
-      "summary": "Debug and fix the outgoing service generation issue in BookingsDashboard.tsx where bookings created for a target laborer (where the current user is the requester) are not appearing in the outgoing requests section",
+      "id": "REQ-61",
+      "summary": "Replace all dollar sign ($) currency symbols with Indian Rupee symbol (₹) throughout the frontend application",
       "acceptanceCriteria": [
-        "When a laborer creates a booking request for another laborer (target laborer), the booking immediately appears in the requester's outgoing requests section",
-        "The outgoing requests section correctly identifies bookings where the current user is the requester",
-        "Newly created bookings are displayed without requiring manual page refresh",
-        "The booking classification logic properly distinguishes between outgoing and incoming bookings based on requester/provider principals"
+        "All instances of '$' are replaced with '₹' in the UI",
+        "Currency formatting uses INR conventions (e.g., ₹1,234.56)",
+        "No dollar symbols remain visible in any frontend component"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "path": "frontend/src/pages/ProfilePage.tsx",
           "operation": "modify",
-          "description": "Fix the outgoing bookings classification logic to correctly identify bookings where the current user is the requester. Review the principal comparison logic in the filtering functions that separate outgoing vs incoming bookings. Ensure that bookings where requester matches the current user's principal are properly classified as outgoing requests. Verify the filter functions are correctly comparing Principal objects (may need .toString() for proper comparison). Add enhanced debug logging to track booking classification, principal comparisons, and the number of outgoing bookings found after query refetch."
+          "description": "Replace dollar sign ($) with Indian Rupee symbol (₹) in service price input field placeholder and display. Update currency formatting to use INR conventions (₹1,234.56 format) in the services section where prices are shown."
         },
         {
-          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "path": "frontend/src/pages/DiscoveryPage.tsx",
           "operation": "modify",
-          "description": "Review and fix the component's React Query integration to ensure proper re-rendering after new bookings are created. Verify that the bookings query properly refetches when invalidated and that the component state updates with the new booking data. Check for any stale closure issues or race conditions in the filtering logic that might prevent newly fetched bookings from being properly classified. Ensure the useGetCallerLaborer query result is properly used in the filtering logic without stale references."
+          "description": "Replace dollar sign ($) with Indian Rupee symbol (₹) in laborer card service price displays. Update price formatting to use INR conventions throughout the laborer listings."
+        },
+        {
+          "path": "frontend/src/pages/BookingDetailPage.tsx",
+          "operation": "modify",
+          "description": "Replace dollar sign ($) with Indian Rupee symbol (₹) in booking detail service price displays. Ensure all price-related information shows INR symbol and formatting."
+        },
+        {
+          "path": "frontend/src/pages/CreateBookingPage.tsx",
+          "operation": "modify",
+          "description": "Replace dollar sign ($) with Indian Rupee symbol (₹) in service price display for the selected service. Update any price-related labels or information to use INR symbol and formatting conventions."
         }
       ]
     },
     {
-      "id": "REQ-47",
-      "summary": "Add comprehensive debug logging to the BookingsDashboard.tsx component to track the complete data flow for outgoing bookings",
+      "id": "REQ-63",
+      "summary": "Update all price input fields and displays across ProfilePage.tsx, CreateBookingPage.tsx, BookingDetailPage.tsx, and DiscoveryPage.tsx to show INR symbol (₹) and use appropriate INR formatting",
       "acceptanceCriteria": [
-        "Console logs capture when bookings query is refetched after a new booking is created",
-        "Logs show the principal comparison logic that classifies bookings as outgoing vs incoming",
-        "Logs display the number of outgoing bookings found and their IDs",
-        "Logs indicate whether the query invalidation and refetch successfully triggered after booking creation"
+        "Price input fields display ₹ prefix or INR label",
+        "Price displays use ₹ symbol throughout the application",
+        "Number formatting follows Indian numbering system conventions where appropriate"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "path": "frontend/src/pages/ProfilePage.tsx",
           "operation": "modify",
-          "description": "Add comprehensive console.log statements throughout the component to debug the booking classification flow. Log: (1) when the component renders and bookings data changes, (2) the current user's principal from identity, (3) the laborer data principal if available, (4) each booking's requester and targetLaborer principals with their string representations, (5) the result of principal comparisons for each booking (is it outgoing or incoming?), (6) the final counts and IDs of outgoing vs incoming bookings, (7) query fetch status and refetch events. Structure logs with clear prefixes like '[BookingsDashboard]' for easy filtering in console."
-        }
-      ]
-    },
-    {
-      "id": "REQ-48",
-      "summary": "Verify that the createBooking mutation in useQueries.ts properly triggers query invalidation for the 'bookings' query key after successful booking creation",
-      "acceptanceCriteria": [
-        "The onSuccess callback in createBooking mutation explicitly invalidates the bookings query",
-        "Query invalidation triggers an immediate refetch of all bookings",
-        "The BookingsDashboard receives updated booking data including the newly created booking",
-        "No manual refresh is required for the new booking to appear in the outgoing section"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Review and enhance the createBooking mutation to ensure it properly invalidates the bookings query after successful booking creation. Verify that the onSuccess callback includes queryClient.invalidateQueries for the laborer data query key (which contains the bookings array). Add debug logging to the onSuccess callback to confirm when invalidation occurs. Ensure the query key used for invalidation matches the query key used in useGetCallerLaborer (which fetches laborer data including bookings). Consider invalidating both the laborer query and any specific bookings-related queries to ensure comprehensive cache updates."
+          "description": "Update service price input fields to show ₹ prefix or INR label. Ensure input validation and display formatting uses INR conventions. Update placeholder text and labels to indicate INR currency."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/pages/DiscoveryPage.tsx",
           "operation": "modify",
-          "description": "Add console logging to the createBooking mutation callbacks to track the mutation lifecycle: log when mutation starts, when it succeeds (in onSuccess), when it errors (in onError), and confirm that query invalidation is triggered. Log the booking ID returned from the backend and the queries being invalidated. This helps verify the complete flow from booking creation through cache invalidation to dashboard update."
-        }
-      ]
-    },
-    {
-      "id": "REQ-49",
-      "summary": "Investigate and fix any timing issues or race conditions in BookingsDashboard.tsx that might prevent newly created bookings from appearing immediately in the outgoing requests section",
-      "acceptanceCriteria": [
-        "The dashboard properly handles the transition from booking creation to display",
-        "No race conditions exist between query invalidation and component re-render",
-        "The outgoing bookings filter function correctly processes newly added bookings",
-        "Component state properly reflects the updated bookings array after refetch"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/BookingsDashboard.tsx",
-          "operation": "modify",
-          "description": "Review the component's dependency on useGetCallerLaborer query results and ensure proper handling of loading/refetching states. Check if the outgoing bookings filtering logic might be using stale data during the refetch transition. Consider adding explicit handling for the query's isFetching or isRefetching states to ensure the UI properly reflects when new data is being loaded. Verify that the filtering functions (outgoing vs incoming) are not capturing stale closure variables and are using the latest query results. Add useEffect or useMemo hooks if needed to properly derive outgoing/incoming booking lists from the latest laborer data."
+          "description": "Update service price displays in laborer cards to consistently use ₹ symbol with proper INR number formatting. Ensure all price-related text consistently shows INR formatting."
         },
         {
-          "path": "frontend/src/pages/BookingsDashboard.tsx",
+          "path": "frontend/src/pages/BookingDetailPage.tsx",
           "operation": "modify",
-          "description": "Ensure the principal comparison logic is robust and handles all edge cases. Verify that Principal objects from the backend are being compared correctly (using .toString() or .toText() for string comparison rather than direct object comparison). Add defensive checks for null/undefined principals and proper type guards. Consider memoizing the principal comparison results to avoid redundant calculations while ensuring the memoization doesn't create stale data issues."
+          "description": "Update booking detail page to display service prices with ₹ symbol and INR formatting conventions throughout the booking information section."
+        },
+        {
+          "path": "frontend/src/pages/CreateBookingPage.tsx",
+          "operation": "modify",
+          "description": "Update service price display in booking creation form to show ₹ symbol with proper INR formatting. Ensure price information is clearly formatted as INR currency."
         }
       ]
     }

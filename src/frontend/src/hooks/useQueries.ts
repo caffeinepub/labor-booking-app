@@ -89,6 +89,72 @@ export function useGetCallerLaborer() {
   });
 }
 
+export function useGetBookings() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<{ incoming: Booking[]; outgoing: Booking[] }>({
+    queryKey: ['bookings'],
+    queryFn: async () => {
+      console.log('═══════════════════════════════════════════════════════════');
+      console.log('[useGetBookings] 🔄 FETCHING ALL BOOKINGS');
+      console.log('[useGetBookings] Timestamp:', new Date().toISOString());
+      console.log('═══════════════════════════════════════════════════════════');
+      
+      if (!actor) throw new Error('Actor not available');
+      if (!identity) throw new Error('Identity not available');
+
+      const myPrincipal = identity.getPrincipal().toString();
+      console.log('[useGetBookings] Current user principal:', myPrincipal);
+
+      // Fetch all laborers to find outgoing bookings
+      console.log('[useGetBookings] Fetching all laborers...');
+      const allLaborers = await actor.getBookablesNearLocation('', BigInt(0));
+      console.log('[useGetBookings] Total laborers found:', allLaborers.length);
+
+      const incoming: Booking[] = [];
+      const outgoing: Booking[] = [];
+
+      // Process all bookings from all laborers
+      for (const laborer of allLaborers) {
+        console.log(`[useGetBookings] Processing laborer: ${laborer.name} (${laborer.id.toString()})`);
+        console.log(`[useGetBookings]   - Bookings count: ${laborer.bookings.length}`);
+        
+        for (const booking of laborer.bookings) {
+          const isRequester = booking.requester.toString() === myPrincipal;
+          const isTarget = booking.targetLaborer.toString() === myPrincipal;
+
+          console.log(`[useGetBookings]   - Booking ${booking.id.toString()}:`, {
+            requester: booking.requester.toString().slice(0, 10) + '...',
+            target: booking.targetLaborer.toString().slice(0, 10) + '...',
+            isRequester,
+            isTarget,
+            status: booking.status,
+          });
+
+          if (isRequester) {
+            outgoing.push(booking);
+            console.log(`[useGetBookings]     ✅ Added to OUTGOING`);
+          }
+          if (isTarget) {
+            incoming.push(booking);
+            console.log(`[useGetBookings]     ✅ Added to INCOMING`);
+          }
+        }
+      }
+
+      console.log('═══════════════════════════════════════════════════════════');
+      console.log('[useGetBookings] 📊 FINAL RESULTS:');
+      console.log('[useGetBookings]   - Incoming bookings:', incoming.length);
+      console.log('[useGetBookings]   - Outgoing bookings:', outgoing.length);
+      console.log('═══════════════════════════════════════════════════════════');
+
+      return { incoming, outgoing };
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+  });
+}
+
 export function useSaveCallerLaborer() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -101,6 +167,7 @@ export function useSaveCallerLaborer() {
     onSuccess: () => {
       console.log('[useSaveCallerLaborer] ✅ Profile saved successfully, invalidating queries...');
       queryClient.invalidateQueries({ queryKey: ['callerLaborer'] });
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
     },
   });
 }
@@ -165,13 +232,15 @@ export function useGetBookingById(bookingId: bigint | undefined) {
       if (!actor) throw new Error('Actor not available');
       if (!bookingId) return null;
 
-      // Fetch caller's laborer data which contains bookings
-      const laborerData = await actor.getCallerLaborer();
-      if (!laborerData) return null;
+      // Fetch all laborers to find the booking
+      const allLaborers = await actor.getBookablesNearLocation('', BigInt(0));
+      
+      for (const laborer of allLaborers) {
+        const booking = laborer.bookings.find((b) => b.id === bookingId);
+        if (booking) return booking;
+      }
 
-      // Find the booking in the laborer's bookings array
-      const booking = laborerData.bookings.find((b) => b.id === bookingId);
-      return booking || null;
+      return null;
     },
     enabled: !!actor && !actorFetching && bookingId !== undefined,
   });
@@ -343,6 +412,7 @@ export function useCreateBooking() {
       // Invalidate and wait for refetch to complete
       await queryClient.invalidateQueries({ queryKey: ['callerLaborer'] });
       await queryClient.invalidateQueries({ queryKey: ['laborers'] });
+      await queryClient.invalidateQueries({ queryKey: ['bookings'] });
       
       // Add a small delay to ensure backend consistency
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -411,26 +481,19 @@ export function useUpdateBookingStatus() {
       console.log('[useUpdateBookingStatus] 🔐 AUTHENTICATION STATE:');
       console.log('[useUpdateBookingStatus]   - Identity present:', !!identity);
       console.log('[useUpdateBookingStatus]   - Principal:', identity?.getPrincipal().toString() || 'N/A');
-      console.log('[useUpdateBookingStatus]   - Is anonymous:', identity?.getPrincipal().isAnonymous() || 'N/A');
-      
-      // Log actor state
-      console.log('[useUpdateBookingStatus] 🎭 ACTOR STATE:');
-      console.log('[useUpdateBookingStatus]   - Actor available:', !!actor);
-      console.log('[useUpdateBookingStatus]   - Actor type:', actor ? typeof actor : 'N/A');
       
       if (!actor) {
         console.error('[useUpdateBookingStatus] ❌ CRITICAL: Actor not available');
-        throw new Error('Actor not available. Please ensure you are logged in.');
+        throw new Error('Actor not available');
       }
 
-      // Log mutation parameters
-      console.log('[useUpdateBookingStatus] 📦 MUTATION PARAMETERS:');
+      console.log('[useUpdateBookingStatus] 📦 REQUEST PAYLOAD:');
       console.log('[useUpdateBookingStatus]   - Booking ID:', bookingId.toString());
-      console.log('[useUpdateBookingStatus]   - Target Status:', status);
-      console.log('[useUpdateBookingStatus]   - Caller Principal:', identity?.getPrincipal().toString() || 'N/A');
+      console.log('[useUpdateBookingStatus]   - New Status:', status);
 
+      console.log('[useUpdateBookingStatus] 🔄 Calling backend updateBookingStatus...');
+      
       try {
-        console.log('[useUpdateBookingStatus] 🔄 Calling backend updateBookingStatus...');
         await actor.updateBookingStatus(bookingId, status);
         
         const responseDuration = Date.now() - requestStartTime;
@@ -445,21 +508,21 @@ export function useUpdateBookingStatus() {
         console.error('[useUpdateBookingStatus] 💥 EXCEPTION CAUGHT');
         console.error('[useUpdateBookingStatus] Time elapsed:', errorDuration, 'ms');
         console.error('[useUpdateBookingStatus] Error:', error);
-        if (error instanceof Error) {
-          console.error('[useUpdateBookingStatus] Error message:', error.message);
-          console.error('[useUpdateBookingStatus] Error stack:', error.stack);
-        }
         console.error('═══════════════════════════════════════════════════════════');
         throw error;
       }
     },
-    onSuccess: () => {
-      console.log('[useUpdateBookingStatus] ✅ Mutation success, invalidating queries...');
-      queryClient.invalidateQueries({ queryKey: ['callerLaborer'] });
-      queryClient.invalidateQueries({ queryKey: ['booking'] });
+    onSuccess: async () => {
+      console.log('[useUpdateBookingStatus] 🎉 Mutation success, invalidating queries...');
+      await queryClient.invalidateQueries({ queryKey: ['callerLaborer'] });
+      await queryClient.invalidateQueries({ queryKey: ['laborers'] });
+      await queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      await queryClient.invalidateQueries({ queryKey: ['booking'] });
+      console.log('[useUpdateBookingStatus] ✅ Query invalidation complete');
     },
     onError: (error) => {
-      console.error('[useUpdateBookingStatus] ❌ Mutation error:', error);
+      console.error('[useUpdateBookingStatus] 🔴 Mutation error callback');
+      console.error('[useUpdateBookingStatus] Error:', error);
     },
   });
 }
@@ -473,9 +536,11 @@ export function useUpdateBookingDetails() {
       if (!actor) throw new Error('Actor not available');
       return actor.updateBookingDetails(bookingId, details);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['callerLaborer'] });
-      queryClient.invalidateQueries({ queryKey: ['booking'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['callerLaborer'] });
+      await queryClient.invalidateQueries({ queryKey: ['laborers'] });
+      await queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      await queryClient.invalidateQueries({ queryKey: ['booking'] });
     },
   });
 }

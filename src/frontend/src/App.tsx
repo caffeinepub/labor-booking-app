@@ -11,11 +11,33 @@ import BookingSuccessPage from './pages/BookingSuccessPage';
 import BookingsDashboard from './pages/BookingsDashboard';
 import BookingDetailPage from './pages/BookingDetailPage';
 import LandingPage from './pages/LandingPage';
+import SystemHealthPage from './pages/SystemHealthPage';
+import { useEffect } from 'react';
 
 function LayoutWrapper() {
-  const { identity } = useInternetIdentity();
+  const { identity, loginStatus } = useInternetIdentity();
   const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
   const isAuthenticated = !!identity;
+
+  useEffect(() => {
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('[App/LayoutWrapper] 🔄 Component State Update');
+    console.log('[App/LayoutWrapper] Timestamp:', new Date().toISOString());
+    console.log('[App/LayoutWrapper] Authentication:', {
+      isAuthenticated,
+      loginStatus,
+      principal: identity?.getPrincipal().toString() || 'N/A',
+      isAnonymous: identity?.getPrincipal().isAnonymous() || 'N/A',
+    });
+    console.log('[App/LayoutWrapper] Profile:', {
+      profileLoading,
+      isFetched,
+      hasProfile: !!userProfile,
+      profileName: userProfile?.name || 'N/A',
+    });
+    console.log('[App/LayoutWrapper] Show Profile Setup:', isAuthenticated && !profileLoading && isFetched && userProfile === null);
+    console.log('═══════════════════════════════════════════════════════════');
+  }, [identity, loginStatus, isAuthenticated, userProfile, profileLoading, isFetched]);
 
   const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
 
@@ -76,6 +98,12 @@ const bookingDetailRoute = createRoute({
   component: BookingDetailPage,
 });
 
+const systemHealthRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/system-health',
+  component: SystemHealthPage,
+});
+
 const routeTree = rootRoute.addChildren([
   landingRoute,
   profileRoute,
@@ -84,6 +112,7 @@ const routeTree = rootRoute.addChildren([
   bookingSuccessRoute,
   bookingsDashboardRoute,
   bookingDetailRoute,
+  systemHealthRoute,
 ]);
 
 const router = createRouter({ routeTree });
@@ -95,5 +124,22 @@ declare module '@tanstack/react-router' {
 }
 
 export default function App() {
+  useEffect(() => {
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('[App] 🚀 APPLICATION INITIALIZED');
+    console.log('[App] Timestamp:', new Date().toISOString());
+    console.log('[App] Router created with routes:', [
+      '/',
+      '/profile',
+      '/discover',
+      '/book/:laborerId',
+      '/booking-success',
+      '/bookings',
+      '/bookings/:bookingId',
+      '/system-health',
+    ]);
+    console.log('═══════════════════════════════════════════════════════════');
+  }, []);
+
   return <RouterProvider router={router} />;
 }
